@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/sales", "destination": "/api/sales.js" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/", "destination": "/index.html" }
+  ]
+}

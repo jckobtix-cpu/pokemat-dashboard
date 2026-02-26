@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon Automat – Login</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d0d0f;
+  color: #e8e8ec;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card {
+  background: #141417;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 380px;
+}
+.logo { text-align: center; margin-bottom: 2rem; }
+.logo-icon {
+  width: 56px; height: 56px;
+  background: #4f8ef7;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 1rem;
+}
+.logo h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+.logo p  { font-size: 0.78rem; color: #6b6b7a; margin-top: 4px; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-size: 0.75rem; font-weight: 600; color: #6b6b7a; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+.field input {
+  width: 100%;
+  background: #1c1c21;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #e8e8ec;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus { border-color: #4f8ef7; }
+.btn {
+  width: 100%;
+  background: #4f8ef7;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  color: white;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.85; }
+.error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: #ef4444;
+  margin-top: 1rem;
+  display: none;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🎮</div>
+    <h1>Pokémon Automat</h1>
+    <p>Sales Dashboard · Přihlášení</p>
+  </div>
+  <div class="field">
+    <label>Uživatelské jméno</label>
+    <input type="text" id="username" placeholder="admin" autocomplete="username">
+  </div>
+  <div class="field">
+    <label>Heslo</label>
+    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+  </div>
+  <button class="btn" onclick="login()">Přihlásit se</button>
+  <div class="error" id="error">Špatné jméno nebo heslo.</div>
+</div>
+
+<script>
+// Přihlašovací údaje – změňte si dle libosti
+const CREDENTIALS = { username: 'admin', password: 'pokemat2026' };
+
+if (sessionStorage.getItem('auth') === 'ok') {
+  window.location.href = 'dashboard.html';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+function login() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  if (u === CREDENTIALS.username && p === CREDENTIALS.password) {
+    sessionStorage.setItem('auth', 'ok');
+    window.location.href = 'dashboard.html';
+  } else {
+    document.getElementById('error').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
