@@ -16,17 +16,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    const url = `https://lynx.nayax.com/operational/api/v1/machines/${MACHINE_ID}/lastSales`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${TOKEN}`,
-        'Content-Type': 'application/json',
-      }
-    });
+    // Zkusíme oba možné endpointy
+    const urls = [
+      `https://lynx.nayax.com/operational/api/v1/machines/${MACHINE_ID}/lastSales`,
+      `https://lynx.nayax.com/operational/v1/machines/${MACHINE_ID}/lastSales`,
+    ];
+
+    let response, lastError;
+    for (const url of urls) {
+      response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${TOKEN}`,
+          'Content-Type': 'application/json',
+        }
+      });
+      if (response.ok) break;
+      lastError = `${url} → HTTP ${response.status}`;
+    }
 
     if (!response.ok) {
       const text = await response.text();
-      return res.status(response.status).json({ error: `Nayax API error: ${response.status}`, detail: text });
+      return res.status(response.status).json({ error: `Nayax API error: ${response.status}`, detail: text, tried: lastError });
     }
 
     const data = await response.json();
