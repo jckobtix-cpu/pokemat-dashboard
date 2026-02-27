@@ -435,6 +435,47 @@ function renderStats(d){
   document.getElementById('gSales').textContent=d.todS;
 }
 
+function generateMockData(){
+  const products=[
+    {slot:'8', name:'Booster Pack SV',price:170},
+    {slot:'10',name:'Tin Box',price:300},
+    {slot:'13',name:'Pikachu Promo',price:60},
+    {slot:'18',name:'Charizard ETB',price:400},
+    {slot:'24',name:'Booster Pack XY',price:150},
+    {slot:'3', name:'Blister Pack',price:120},
+    {slot:'5', name:'Mini Tin',price:85},
+  ];
+  const methods=['Karta','Karta','Karta','Visa','Mastercard','Hotovost','Apple Pay','Google Pay'];
+  const sales=[];
+  const now=new Date();
+  // Generuj ~10 prodejů denně za posledních 90 dní
+  for(let day=89;day>=0;day--){
+    // Víkendy mají více prodejů
+    const d=new Date(now);d.setDate(d.getDate()-day);
+    const isWeekend=d.getDay()===0||d.getDay()===6;
+    const count=isWeekend?Math.floor(Math.random()*8)+12:Math.floor(Math.random()*6)+7;
+    for(let i=0;i<count;i++){
+      // Aktivnější hodiny 10-18
+      const hour=Math.random()<0.7?Math.floor(Math.random()*9)+10:Math.floor(Math.random()*24);
+      const min=Math.floor(Math.random()*60);
+      const dt=new Date(d);dt.setHours(hour,min,0,0);
+      // Charizard ETB se prodává méně
+      const weights=[3,2,4,1,3,2,2];
+      const rand=Math.random()*17;let wi=0,wsum=0;
+      for(let j=0;j<weights.length;j++){wsum+=weights[j];if(rand<wsum){wi=j;break;}}
+      const prod=products[wi];
+      sales.push({
+        AuthorizationDateTimeGMT:dt.toISOString(),
+        SettlementValue:prod.price,
+        Selection:prod.slot,
+        ProductName:prod.name,
+        PaymentMethod:methods[Math.floor(Math.random()*methods.length)],
+      });
+    }
+  }
+  return sales;
+}
+
 async function loadData(){
   document.getElementById('loading').style.display='flex';
   document.getElementById('errBanner').style.display='none';
@@ -451,10 +492,15 @@ async function loadData(){
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
   }catch(e){
     console.error(e);
+    // API nefunguje → použij mock data
+    const mock=generateMockData();
+    const d=processData(mock,AD);
+    renderStats(d);renderRev(d.byDay);renderDonut(d.prods);renderWeek(d.byWD);
+    renderCompare(d.thisW,d.lastW);renderHour(d.byHourC);renderHeatmap(d.hm);
+    renderPay(d.payM,d.totPay);renderProds(d.prods);renderTx(d.lastTx);
     document.getElementById('apiDot').classList.add('red');
-    document.getElementById('apiStatus').textContent='Chyba připojení';
-    document.getElementById('errBanner').style.display='flex';
-    document.getElementById('errMsg').textContent=`Chyba: ${e.message}`;
+    document.getElementById('apiStatus').textContent='Demo data';
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})+' · demo';
   }finally{document.getElementById('loading').style.display='none';}
 }
 
