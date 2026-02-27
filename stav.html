@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon Automat – Stav automatu</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0c;--surface:#111114;--surface2:#18181d;--surface3:#1f1f26;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+  --text:#e8e8ec;--muted:#5a5a6a;--muted2:#8888a0;
+  --accent:#4f8ef7;--accent2:#22c55e;--warn:#f59e0b;--danger:#ef4444;--purple:#a78bfa;
+  --r:12px;--rl:16px;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+.layout{display:flex;min-height:100vh}
+
+.sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:.25rem .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+.logo-text{font-size:.82rem;font-weight:700;line-height:1.2}
+.logo-text span{display:block;font-size:.66rem;font-weight:400;color:var(--muted2);margin-top:1px}
+.nav-sec{margin-bottom:1.1rem}
+.nav-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:0 .6rem;margin-bottom:.3rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;transition:all .15s;margin-bottom:1px;text-decoration:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(79,142,247,.1);color:var(--accent)}
+.nav-ico{font-size:.95rem;width:17px;text-align:center;flex-shrink:0}
+.sidebar-foot{margin-top:auto;padding-top:.875rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.api-st{display:flex;align-items:center;gap:7px;padding:.5rem .6rem;background:var(--surface2);border-radius:8px;font-size:.72rem;color:var(--muted2)}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);box-shadow:0 0 5px var(--accent2);animation:blink 2s ease-in-out infinite;flex-shrink:0}
+.api-dot.red{background:var(--danger);box-shadow:0 0 5px var(--danger);animation:none}
+.api-dot.warn{background:var(--warn);box-shadow:0 0 5px var(--warn)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.btn-logout{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;border:none;background:none;font-family:inherit;width:100%;transition:all .15s}
+.btn-logout:hover{background:rgba(239,68,68,.08);color:var(--danger)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
+.topbar h1{font-size:1rem;font-weight:600;letter-spacing:-.02em}
+.topbar p{font-size:.72rem;color:var(--muted2);margin-top:1px}
+.tbr{display:flex;align-items:center;gap:.625rem}
+.btn-ref{display:flex;align-items:center;gap:5px;padding:6px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:.75rem;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-ref:hover{background:var(--accent);border-color:var(--accent)}
+.content{padding:1.5rem 1.75rem;flex:1}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(10,10,12,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:1rem;font-size:.88rem;color:var(--muted2);backdrop-filter:blur(4px)}
+.spinner{width:34px;height:34px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATUS HERO */
+.status-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.75rem 2rem;display:flex;align-items:center;gap:2rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.status-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent2)}
+.status-hero.warn::before{background:var(--warn)}
+.status-hero.danger::before{background:var(--danger)}
+.status-pulse{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;position:relative}
+.status-pulse::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--accent2);animation:pulse 2s ease-in-out infinite}
+.status-pulse.warn::after{border-color:var(--warn)}
+.status-pulse.danger::after{border-color:var(--danger);animation:none}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.1)}}
+.status-info h2{font-size:1.4rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.3rem}
+.status-info p{font-size:.82rem;color:var(--muted2)}
+.status-meta{margin-left:auto;text-align:right;flex-shrink:0}
+.status-meta .label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:.25rem}
+.status-meta .value{font-size:.9rem;font-weight:600;font-family:'DM Mono',monospace}
+
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:1.5rem 0 1rem}
+.sec-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.25rem;position:relative;overflow:hidden;transition:border-color .2s}
+.sc:hover{border-color:var(--border2)}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.sc-green::after{background:linear-gradient(90deg,var(--accent2) 60%,transparent)}
+.sc-warn::after{background:linear-gradient(90deg,var(--warn) 45%,transparent)}
+.sc-blue::after{background:linear-gradient(90deg,var(--accent) 50%,transparent)}
+.sc-purple::after{background:linear-gradient(90deg,var(--purple) 40%,transparent)}
+.st{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem}
+.sl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2)}
+.badge{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:99px}
+.b-green{background:rgba(34,197,94,.12);color:var(--accent2)}
+.b-warn{background:rgba(245,158,11,.12);color:var(--warn)}
+.b-red{background:rgba(239,68,68,.12);color:var(--danger)}
+.b-neu{background:rgba(107,107,122,.12);color:var(--muted2)}
+.sv{font-size:1.75rem;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:.3rem}
+.ss{font-size:.7rem;color:var(--muted2);line-height:1.4}
+.ss strong{color:var(--text);font-weight:600}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.375rem;margin-bottom:1rem}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.ct{font-size:.875rem;font-weight:600;letter-spacing:-.01em}
+.cs{font-size:.7rem;color:var(--muted2);margin-top:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+
+/* ALERTS */
+.alert{display:flex;align-items:flex-start;gap:12px;padding:.875rem 1rem;border-radius:var(--r);margin-bottom:.5rem;font-size:.82rem}
+.alert:last-child{margin-bottom:0}
+.alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.alert-body{flex:1}
+.alert-title{font-weight:600;margin-bottom:2px}
+.alert-sub{font-size:.72rem;color:var(--muted2)}
+.alert-time{font-size:.68rem;font-family:'DM Mono',monospace;color:var(--muted);flex-shrink:0;margin-top:2px}
+.a-danger{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15)}
+.a-warn{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15)}
+.a-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15)}
+.a-info{background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.15)}
+
+/* SLOT GRID */
+.slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+.slot-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:1rem;transition:border-color .2s}
+.slot-card.active{border-color:rgba(34,197,94,.3)}
+.slot-card.inactive{border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.03)}
+.slot-card.warn{border-color:rgba(245,158,11,.3)}
+.slot-num{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-bottom:.4rem}
+.slot-name{font-size:.8rem;font-weight:600;margin-bottom:.5rem;line-height:1.3}
+.slot-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.slot-last{font-size:.65rem;color:var(--muted2)}
+.slot-count{font-size:.72rem;font-weight:600;font-family:'DM Mono',monospace}
+.dot-green{color:var(--accent2)}
+.dot-warn{color:var(--warn)}
+.dot-red{color:var(--danger)}
+.dot-muted{color:var(--muted)}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:12px;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.78rem}
+.tl-item:last-child{border-bottom:none}
+.tl-time{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted2);width:44px;flex-shrink:0;padding-top:2px}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-body{flex:1}
+.tl-title{font-weight:500}
+.tl-sub{font-size:.7rem;color:var(--muted2);margin-top:1px}
+
+/* UPTIME BAR */
+.uptime-bar{display:flex;gap:2px;margin-top:.75rem}
+.ub-seg{flex:1;height:28px;border-radius:3px;cursor:default;transition:opacity .15s}
+.ub-seg:hover{opacity:.7}
+
+.empty{color:var(--muted2);font-size:.78rem;padding:.75rem 0}
+.no-alerts{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:.5rem;color:var(--muted2);font-size:.82rem}
+
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+@media(max-width:900px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <span>Načítám stav automatu...</span>
+</div>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎮</div>
+    <div class="logo-text">Pokémon Automat <span>Nayax · Live Dashboard</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Navigace</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-ico">📊</span> Dashboard</a>
+    <a href="grafy.html" class="nav-item"><span class="nav-ico">📈</span> Grafy</a>
+    <a href="produkty.html" class="nav-item"><span class="nav-ico">📦</span> Produkty</a>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Automat</div>
+    <a href="stav.html" class="nav-item active"><span class="nav-ico">🖥️</span> Stav automatu</a>
+    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
+  </div>
+  <div class="sidebar-foot">
+    <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">Připojuji...</span></div>
+    <button class="btn-logout" onclick="logout()"><span class="nav-ico">🚪</span> Odhlásit se</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div><h1>Stav automatu</h1><p>Live přehled · Automat 235556676 · Aktualizováno: <span id="lastUpdate">–</span></p></div>
+    <div class="tbr">
+      <button class="btn-ref" onclick="loadData()">↻ Obnovit</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATUS HERO -->
+    <div class="status-hero" id="statusHero">
+      <div class="status-pulse" id="statusPulse">🟢</div>
+      <div class="status-info">
+        <h2 id="statusTitle">Načítám...</h2>
+        <p id="statusDesc">Kontroluji stav automatu...</p>
+      </div>
+      <div class="status-meta">
+        <div class="label">Poslední prodej</div>
+        <div class="value" id="lastSaleTime">–</div>
+        <div style="margin-top:.75rem">
+          <div class="label">ID automatu</div>
+          <div class="value" style="color:var(--muted2)">235556676</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="sc sc-green">
+        <div class="st"><div class="sl">Dnes prodejů</div><span class="badge b-green" id="b1">–</span></div>
+        <div class="sv" id="v-dnes">–</div>
+        <div class="ss" id="s-dnes">dnešní transakce</div>
+      </div>
+      <div class="sc sc-blue">
+        <div class="st"><div class="sl">Průměrný interval</div><span class="badge b-neu">mezi prodeji</span></div>
+        <div class="sv" id="v-interval">–</div>
+        <div class="ss">průměrná pauza mezi 2 prodeji</div>
+      </div>
+      <div class="sc sc-warn">
+        <div class="st"><div class="sl">Aktivní sloty</div><span class="badge b-neu" id="b3">–</span></div>
+        <div class="sv" id="v-sloty">–</div>
+        <div class="ss">slotů s prodejem za 7 dní</div>
+      </div>
+      <div class="sc sc-purple">
+        <div class="st"><div class="sl">Nečinnost</div><span class="badge b-neu" id="b4">–</span></div>
+        <div class="sv" id="v-necin">–</div>
+        <div class="ss" id="s-necin">od posledního prodeje</div>
+      </div>
+    </div>
+
+    <!-- ALERTS + SLOT OVERVIEW -->
+    <div class="g2">
+
+      <!-- ALERTS -->
+      <div class="card">
+        <div class="ch"><div><div class="ct">⚠️ Upozornění</div><div class="cs">Automaticky detekované problémy</div></div></div>
+        <div id="alertsList">
+          <div class="empty">Načítám...</div>
+        </div>
+      </div>
+
+      <!-- STAV SLOTŮ -->
+      <div class="card">
+        <div class="ch"><div><div class="ct">Stav slotů</div><div class="cs">Aktivita za posledních 7 dní</div></div></div>
+        <div class="slot-grid" id="slotGrid">
+          <div class="empty">Načítám...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- UPTIME POSLEDNÍCH 24 HODIN -->
+    <div class="card">
+      <div class="ch">
+        <div><div class="ct">Aktivita posledních 24 hodin</div><div class="cs">Každý segment = 1 hodina · zelená = prodej · šedá = žádný prodej</div></div>
+        <div style="display:flex;gap:10px;font-size:.7rem;color:var(--muted2);align-items:center">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--accent2);border-radius:2px;display:inline-block"></span> Prodej</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--surface3);border-radius:2px;display:inline-block"></span> Bez prodeje</span>
+        </div>
+      </div>
+      <div class="uptime-bar" id="uptimeBar"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)">
+        <span>před 24h</span><span>před 12h</span><span>nyní</span>
+      </div>
+    </div>
+
+    <!-- POSLEDNÍ AKTIVITA TIMELINE -->
+    <div class="card">
+      <div class="ch"><div><div class="ct">Poslední aktivita</div><div class="cs">Chronologický přehled posledních prodejů</div></div></div>
+      <div class="timeline" id="timeline">
+        <div class="empty">Načítám...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+if(sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
+
+const SLOTS={};
+const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
+const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||0);
+const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
+const gs=t=>String(t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?');
+function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
+
+function timeAgo(date){
+  const diff=Math.floor((Date.now()-date.getTime())/1000);
+  if(diff<60)return`${diff}s`;
+  if(diff<3600)return`${Math.floor(diff/60)} min`;
+  if(diff<86400)return`${Math.floor(diff/3600)} hod`;
+  return`${Math.floor(diff/86400)} dní`;
+}
+
+function formatTime(date){
+  return date.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
+}
+
+function analyze(sales){
+  const now=new Date();
+  const sorted=[...sales].sort((a,b)=>gd(b)-gd(a));
+  const last=sorted[0];
+  const lastDate=last?gd(last):null;
+
+  // Dnešní prodeje
+  const tod=new Date();tod.setHours(0,0,0,0);
+  const todaySales=sales.filter(s=>gd(s)>=tod);
+
+  // Prodeje za posledních 7 dní
+  const cut7=new Date();cut7.setDate(cut7.getDate()-7);
+  const week=sales.filter(s=>gd(s)>=cut7);
+
+  // Prodeje za posledních 24 hodin po hodinách
+  const hours24=Array(24).fill(0);
+  const cut24=new Date(now.getTime()-24*60*60*1000);
+  sales.filter(s=>gd(s)>=cut24).forEach(s=>{
+    const h=Math.floor((now-gd(s))/(60*60*1000));
+    if(h>=0&&h<24)hours24[23-h]++;
+  });
+
+  // Průměrný interval mezi prodeji (minuty)
+  let avgInterval=null;
+  if(sorted.length>=2){
+    const diffs=[];
+    for(let i=0;i<Math.min(sorted.length-1,20);i++){
+      const diff=(gd(sorted[i])-gd(sorted[i+1]))/60000;
+      if(diff>0&&diff<480)diffs.push(diff); // max 8h gap
+    }
+    if(diffs.length)avgInterval=Math.round(diffs.reduce((a,b)=>a+b,0)/diffs.length);
+  }
+
+  // Nečinnost
+  const inactiveMin=lastDate?Math.floor((now-lastDate)/60000):null;
+
+  // Aktivní sloty za 7 dní
+  const slotActivity={};
+  week.forEach(s=>{
+    const slot=gs(s);
+    if(!slotActivity[slot])slotActivity[slot]={count:0,lastSale:null,revenue:0};
+    slotActivity[slot].count++;
+    slotActivity[slot].revenue+=ga(s);
+    const d=gd(s);
+    if(!slotActivity[slot].lastSale||d>slotActivity[slot].lastSale)slotActivity[slot].lastSale=d;
+  });
+
+  // Všechny sloty které kdy prodávaly
+  const allSlots={};
+  sales.forEach(s=>{
+    const slot=gs(s);
+    if(!allSlots[slot])allSlots[slot]={count:0,lastSale:null};
+    allSlots[slot].count++;
+    const d=gd(s);
+    if(!allSlots[slot].lastSale||d>allSlots[slot].lastSale)allSlots[slot].lastSale=d;
+  });
+
+  // ALERTS
+  const alerts=[];
+
+  // 1. Automat nečinný více než 4 hodiny ve špičce
+  if(inactiveMin!==null&&inactiveMin>240){
+    const h=now.getHours();
+    if(h>=10&&h<=20){
+      alerts.push({type:'danger',icon:'🚨',title:'Automat nečinný ve špičce',sub:`Poslední prodej byl před ${timeAgo(lastDate)} – neobvyklá pauza během otevírací doby`,time:timeAgo(lastDate)});
+    } else {
+      alerts.push({type:'warn',icon:'⏰',title:'Dlouhá nečinnost',sub:`Poslední prodej byl před ${timeAgo(lastDate)}`,time:timeAgo(lastDate)});
+    }
+  }
+
+  // 2. Dnes žádný prodej
+  if(todaySales.length===0){
+    alerts.push({type:'warn',icon:'📭',title:'Dnes ještě žádný prodej',sub:'Zkontrolujte zda automat funguje správně',time:'dnes'});
+  }
+
+  // 3. Sloty bez prodeje 3+ dny
+  Object.entries(allSlots).forEach(([slot,data])=>{
+    const daysSince=Math.floor((now-data.lastSale)/86400000);
+    if(daysSince>=3&&daysSince<14){
+      alerts.push({type:'warn',icon:'📦',title:`${sn(slot)} se neprodával ${daysSince} dní`,sub:'Možná prázdný slot nebo zaseknutý produkt',time:`${daysSince} dní`});
+    } else if(daysSince>=14){
+      alerts.push({type:'danger',icon:'❌',title:`${sn(slot)} se neprodával ${daysSince} dní`,sub:'Pravděpodobně prázdný slot – zvažte doplnění',time:`${daysSince} dní`});
+    }
+  });
+
+  // 4. Výborný den – pozitivní alert
+  if(todaySales.length>=15){
+    alerts.push({type:'ok',icon:'🔥',title:`Výborný den! ${todaySales.length} prodejů dnes`,sub:'Nadprůměrná aktivita automatu',time:'dnes'});
+  }
+
+  // 5. Žádné alerty
+  if(alerts.length===0){
+    alerts.push({type:'ok',icon:'✅',title:'Vše v pořádku',sub:'Automat funguje normálně, žádné problémy nebyly detekovány',time:'nyní'});
+  }
+
+  return{sorted,lastDate,todaySales,week,hours24,avgInterval,inactiveMin,slotActivity,allSlots,alerts,activeSlots:Object.keys(slotActivity).length};
+}
+
+function renderStatus(d){
+  const hero=document.getElementById('statusHero');
+  const pulse=document.getElementById('statusPulse');
+  const inMin=d.inactiveMin;
+
+  let status='ok',emoji='🟢',title='Automat funguje',desc='Vše v pořádku – automat je aktivní';
+  if(!d.lastDate){status='danger';emoji='🔴';title='Žádná data';desc='Nepodařilo se načíst data z Nayax API';}
+  else if(inMin>240&&new Date().getHours()>=10&&new Date().getHours()<=20){status='danger';emoji='🔴';title='Možný výpadek automatu';desc=`Poslední prodej byl před ${timeAgo(d.lastDate)} – zkontrolujte automat`;}
+  else if(inMin>120){status='warn';emoji='🟡';title='Delší nečinnost';desc=`Poslední prodej před ${timeAgo(d.lastDate)}`;}
+
+  hero.className='status-hero'+(status!=='ok'?' '+status:'');
+  pulse.className='status-pulse'+(status!=='ok'?' '+status:'');
+  pulse.textContent=emoji;
+  document.getElementById('statusTitle').textContent=title;
+  document.getElementById('statusDesc').textContent=desc;
+  document.getElementById('lastSaleTime').textContent=d.lastDate?`${timeAgo(d.lastDate)} zpět (${formatTime(d.lastDate)})`:'–';
+}
+
+function renderStats(d){
+  document.getElementById('v-dnes').textContent=d.todaySales.length;
+  document.getElementById('b1').textContent=d.todaySales.length>0?'aktivní':'žádný';
+  document.getElementById('b1').className='badge '+(d.todaySales.length>0?'b-green':'b-red');
+  document.getElementById('v-interval').textContent=d.avgInterval?`${d.avgInterval} min`:'–';
+  document.getElementById('v-sloty').textContent=d.activeSlots;
+  document.getElementById('b3').textContent=`z ${Object.keys(d.allSlots).length} celkem`;
+  const inMin=d.inactiveMin;
+  if(inMin===null){document.getElementById('v-necin').textContent='–';}
+  else if(inMin<60){document.getElementById('v-necin').textContent=`${inMin} min`;}
+  else if(inMin<1440){document.getElementById('v-necin').textContent=`${Math.floor(inMin/60)} hod`;}
+  else{document.getElementById('v-necin').textContent=`${Math.floor(inMin/1440)} dní`;}
+  document.getElementById('b4').className='badge '+(inMin>240?'b-red':inMin>60?'b-warn':'b-green');
+  document.getElementById('b4').textContent=inMin>240?'⚠️ Pozor':inMin>60?'Delší':'OK';
+}
+
+function renderAlerts(alerts){
+  document.getElementById('alertsList').innerHTML=alerts.map(a=>`
+    <div class="alert a-${a.type}">
+      <div class="alert-icon">${a.icon}</div>
+      <div class="alert-body">
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-sub">${a.sub}</div>
+      </div>
+      <div class="alert-time">${a.time}</div>
+    </div>`).join('');
+}
+
+function renderSlots(allSlots){
+  const now=new Date();
+  const entries=Object.entries(allSlots).sort((a,b)=>b[1].count-a[1].count);
+  if(!entries.length){document.getElementById('slotGrid').innerHTML='<div class="empty">Žádné sloty</div>';return;}
+  document.getElementById('slotGrid').innerHTML=entries.map(([slot,data])=>{
+    const daysSince=Math.floor((now-data.lastSale)/86400000);
+    let cls='active',dotCls='dot-green',dotIcon='●';
+    if(daysSince>=7){cls='inactive';dotCls='dot-red';dotIcon='●';}
+    else if(daysSince>=3){cls='warn';dotCls='dot-warn';dotIcon='●';}
+    return`<div class="slot-card ${cls}">
+      <div class="slot-num">SLOT ${slot}</div>
+      <div class="slot-name">${sn(slot)}</div>
+      <div style="font-size:.7rem;color:var(--muted2)">Posl. prodej: <strong style="color:var(--text)">${daysSince===0?'dnes':daysSince===1?'včera':daysSince+' dní'}</strong></div>
+      <div class="slot-footer">
+        <div class="slot-last">${data.count} prodejů/7d</div>
+        <div class="slot-count ${dotCls}">${dotIcon}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderUptime(hours24){
+  const max=Math.max(...hours24,1);
+  document.getElementById('uptimeBar').innerHTML=hours24.map((v,i)=>{
+    const h=new Date();h.setHours(h.getHours()-(23-i));
+    const label=`${String(h.getHours()).padStart(2,'0')}:00 – ${v} prodejů`;
+    const color=v===0?'var(--surface3)':v>=max*0.7?'var(--accent2)':'rgba(34,197,94,.4)';
+    return`<div class="ub-seg" style="background:${color}" title="${label}"></div>`;
+  }).join('');
+}
+
+function renderTimeline(sorted){
+  const items=sorted.slice(0,15);
+  if(!items.length){document.getElementById('timeline').innerHTML='<div class="empty">Žádné transakce</div>';return;}
+  const now=new Date();
+  document.getElementById('timeline').innerHTML=items.map(t=>{
+    const d=gd(t),a=ga(t),slot=gs(t),method=pm(t);
+    const mins=Math.floor((now-d)/60000);
+    const timeStr=mins<60?`${mins} min`:`${Math.floor(mins/60)}h ${mins%60}m`;
+    return`<div class="tl-item">
+      <div class="tl-time">${formatTime(d)}</div>
+      <div class="tl-dot" style="background:var(--accent2)"></div>
+      <div class="tl-body">
+        <div class="tl-title">${sn(slot)} · <span style="color:var(--accent2);font-family:'DM Mono',monospace">${Math.round(a).toLocaleString('cs-CZ')} Kč</span></div>
+        <div class="tl-sub">${method} · před ${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadData(){
+  document.getElementById('loading').style.display='flex';
+  try{
+    const res=await fetch('/api/sales');
+    if(!res.ok)throw new Error(`${res.status}`);
+    const raw=await res.json();
+    const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
+    const d=analyze(sales);
+    renderStatus(d);
+    renderStats(d);
+    renderAlerts(d.alerts);
+    renderSlots(d.allSlots);
+    renderUptime(d.hours24);
+    renderTimeline(d.sorted);
+    document.getElementById('apiDot').classList.remove('red');
+    document.getElementById('apiStatus').textContent='Nayax · live';
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    console.error(e);
+    document.getElementById('apiDot').classList.add('red');
+    document.getElementById('apiStatus').textContent='API nedostupné';
+    document.getElementById('statusTitle').textContent='API nedostupné';
+    document.getElementById('statusDesc').textContent='Čekáme na povolení přístupu od Nayax';
+    document.getElementById('statusPulse').textContent='🔴';
+    document.getElementById('alertsList').innerHTML=`<div class="alert a-warn"><div class="alert-icon">⚠️</div><div class="alert-body"><div class="alert-title">API přístup čeká na schválení</div><div class="alert-sub">Stav automatu bude dostupný jakmile Nayax povolí přístup</div></div></div>`;
+    document.getElementById('lastUpdate').textContent='–';
+  }finally{document.getElementById('loading').style.display='none';}
+}
+
+// Obnova každých 2 minut
+setInterval(loadData,2*60*1000);
+loadData();
+</script>
+</body>
+</html>
