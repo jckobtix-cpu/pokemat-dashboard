@@ -21,6 +21,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 .layout{display:flex;min-height:100vh}
 
+/* SIDEBAR */
 .sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:.25rem .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
 .logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
@@ -28,7 +29,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .logo-text span{display:block;font-size:.66rem;font-weight:400;color:var(--muted2);margin-top:1px}
 .nav-sec{margin-bottom:1.1rem}
 .nav-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:0 .6rem;margin-bottom:.3rem}
-.nav-item{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;transition:all .15s;margin-bottom:1px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;transition:all .15s;margin-bottom:1px;text-decoration:none}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
 .nav-item.active{background:rgba(79,142,247,.1);color:var(--accent)}
 .nav-ico{font-size:.95rem;width:17px;text-align:center;flex-shrink:0}
@@ -40,6 +41,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .btn-logout{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;border:none;background:none;font-family:inherit;width:100%;transition:all .15s}
 .btn-logout:hover{background:rgba(239,68,68,.08);color:var(--danger)}
 
+/* MAIN */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
 .topbar h1{font-size:1rem;font-weight:600;letter-spacing:-.02em}
@@ -51,19 +53,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ptab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .btn-ref{display:flex;align-items:center;gap:5px;padding:6px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:.75rem;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
 .btn-ref:hover{background:var(--accent);border-color:var(--accent)}
-
 .content{padding:1.5rem 1.75rem;flex:1}
 
-.sec-hdr{display:flex;align-items:center;gap:10px;margin:1.75rem 0 1rem}
-.sec-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);white-space:nowrap}
-.sec-line{flex:1;height:1px;background:var(--border)}
-
+/* LOADING */
 .loading-overlay{position:fixed;inset:0;background:rgba(10,10,12,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:1rem;font-size:.88rem;color:var(--muted2);backdrop-filter:blur(4px)}
 .spinner{width:34px;height:34px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.err-banner{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:var(--r);padding:.875rem 1.25rem;display:flex;align-items:flex-start;gap:10px;margin-bottom:1.25rem}
-.err-banner p{font-size:.78rem;color:#fca5a5;line-height:1.5}
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:0 0 1rem}
+.sec-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border)}
 
 /* STAT CARDS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:.875rem}
@@ -94,10 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
 .ct{font-size:.875rem;font-weight:600;letter-spacing:-.01em}
 .cs{font-size:.7rem;color:var(--muted2);margin-top:2px}
-
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
 .gm{display:grid;grid-template-columns:1fr 310px;gap:.875rem}
-.mb{margin-bottom:.875rem}
 
 /* TX */
 .tx-row{display:flex;align-items:center;gap:9px;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.78rem}
@@ -108,61 +105,20 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .tp{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tm{color:var(--muted2);font-size:.68rem;width:68px;flex-shrink:0}
 .ta{font-family:'DM Mono',monospace;font-weight:600;color:var(--accent2);font-size:.78rem}
-
-/* PRODUCTS */
-.pr{display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:1px solid var(--border)}
-.pr:last-child{border-bottom:none}
-.prk{width:18px;font-size:.68rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:right;flex-shrink:0}
-.pi{flex:1;min-width:0}
-.pn{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ps{font-size:.66rem;color:var(--muted2)}
-.pbw{width:50px;height:3px;background:var(--surface3);border-radius:99px;overflow:hidden;flex-shrink:0}
-.pb{height:100%;border-radius:99px;background:var(--accent)}
-.pc{font-size:.75rem;font-family:'DM Mono',monospace;width:26px;text-align:right;flex-shrink:0;color:var(--muted2)}
-.pv{font-size:.72rem;color:var(--accent2);font-weight:600;width:60px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace}
-
-/* HEATMAP */
-.hm-wrap{overflow-x:auto}
-.hm-grid{display:grid;grid-template-columns:30px repeat(24,1fr);gap:3px;min-width:500px}
-.hm-h{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:center;padding-bottom:2px}
-.hm-d{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted2);text-align:right;padding-right:5px;line-height:18px}
-.hm-c{height:18px;border-radius:3px;cursor:default}
-.h0{background:var(--surface3)}.h1{background:rgba(79,142,247,.18)}.h2{background:rgba(79,142,247,.38)}.h3{background:rgba(79,142,247,.58)}.h4{background:rgba(79,142,247,.78)}.h5{background:var(--accent)}
-
-/* GOAL */
-.goal-wrap{display:flex;align-items:center;gap:1.5rem}
-.goal-ring{position:relative;width:100px;height:100px;flex-shrink:0}
-.goal-ring svg{transform:rotate(-90deg)}
-.grb{fill:none;stroke:var(--surface3);stroke-width:8}
-.grf{fill:none;stroke:var(--accent2);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
-.goal-ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.gpct{font-size:1.3rem;font-weight:700;line-height:1}
-.glbl{font-size:.6rem;color:var(--muted2);margin-top:2px}
-.goal-info{flex:1;display:flex;flex-direction:column;gap:8px}
-.gi-row{display:flex;justify-content:space-between;align-items:center;font-size:.75rem}
-.gi-row span{color:var(--muted2)}
-.gi-row strong{font-weight:600;font-family:'DM Mono',monospace}
-
-/* PAY */
-.pay-list{display:flex;flex-direction:column;gap:10px}
-.pay-row{display:flex;align-items:center;gap:10px;font-size:.78rem}
-.pay-ico{font-size:1.1rem;width:26px;text-align:center;flex-shrink:0}
-.pay-name{flex:1;font-weight:500}
-.pay-bw{width:80px;height:5px;background:var(--surface3);border-radius:99px;overflow:hidden;flex-shrink:0}
-.pay-b{height:100%;border-radius:99px}
-.pay-pct{width:32px;text-align:right;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted2)}
-
 .empty{color:var(--muted2);font-size:.78rem;padding:.75rem 0}
 
-@media(max-width:1300px){.stats-row{grid-template-columns:repeat(2,1fr)}.gm{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
-@media(max-width:960px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
+/* DEMO BADGE */
+.demo-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:3px 8px;font-size:.68rem;font-weight:600;color:var(--warn);margin-bottom:1rem}
+
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}.gm{grid-template-columns:1fr}}
+@media(max-width:900px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <span>Načítám data z Nayax...</span>
+  <span>Načítám data...</span>
 </div>
 
 <div class="layout">
@@ -173,15 +129,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="logo-text">Pokémon Automat <span>Nayax · Live Dashboard</span></div>
   </div>
   <div class="nav-sec">
-    <div class="nav-lbl">Přehled</div>
-    <div class="nav-item active"><span class="nav-ico">📊</span> Dashboard</div>
-    <div class="nav-item"><span class="nav-ico">📈</span> Grafy</div>
-    <div class="nav-item"><span class="nav-ico">📦</span> Produkty</div>
+    <div class="nav-lbl">Navigace</div>
+    <a href="dashboard.html" class="nav-item active"><span class="nav-ico">📊</span> Dashboard</a>
+    <a href="grafy.html" class="nav-item"><span class="nav-ico">📈</span> Grafy</a>
+    <a href="produkty.html" class="nav-item"><span class="nav-ico">📦</span> Produkty</a>
   </div>
   <div class="nav-sec">
     <div class="nav-lbl">Automat</div>
     <div class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</div>
-    <div class="nav-item"><span class="nav-ico">🔔</span> Alerty</div>
     <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
   </div>
   <div class="sidebar-foot">
@@ -205,9 +160,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
   <div class="content">
 
-    <div class="err-banner" id="errBanner" style="display:none">
-      <span>⚠️</span><p id="errMsg">Chyba při načítání.</p>
-    </div>
+    <div id="demoBadge" style="display:none" class="demo-badge">⚠️ Demo data – čekáme na Nayax API přístup</div>
 
     <!-- PŘEHLED -->
     <div class="sec-hdr"><span class="sec-title">Přehled</span><div class="sec-line"></div></div>
@@ -218,72 +171,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="sc sc-warn"><div class="st"><div class="sl">Průměrná hodnota</div><span class="badge bn">/ nákup</span></div><div class="sv" id="v-avg">–</div><div class="ss">průměr na transakci</div></div>
       <div class="sc sc-red"><div class="st"><div class="sl">Nejlepší den</div><span class="badge bs">⭐ Top</span></div><div class="sv" id="v-bestday">–</div><div class="ss" id="s-bestday">načítám...</div></div>
     </div>
-    <div class="stats-row">
+    <div class="stats-row" style="margin-bottom:1.5rem">
       <div class="sc sc-purple"><div class="st"><div class="sl">Nejvyšší nákup</div><span class="badge bp">Max</span></div><div class="sv" id="v-max">–</div><div class="ss">jednorázová transakce</div></div>
       <div class="sc sc-cyan"><div class="st"><div class="sl">Dnešní tržby</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today">–</div><div class="ss" id="s-today">načítám...</div></div>
       <div class="sc sc-lime"><div class="st"><div class="sl">Tento týden</div><span class="badge bn">Týden</span></div><div class="sv" id="v-week">–</div><div class="ss">od pondělí do dnes</div></div>
       <div class="sc sc-pink"><div class="st"><div class="sl">Hotovost vs Karta</div><span class="badge bn">Split</span></div><div class="sv" id="v-split">–</div><div class="ss" id="s-split">načítám...</div></div>
     </div>
 
-    <!-- GRAFY -->
-    <div class="sec-hdr"><span class="sec-title">Grafy</span><div class="sec-line"></div></div>
+    <!-- GRAF + TRANSAKCE -->
+    <div class="sec-hdr"><span class="sec-title">Přehled tržeb</span><div class="sec-line"></div></div>
 
-    <div class="gm mb">
-      <div class="card"><div class="ch"><div><div class="ct">Tržby po dnech</div><div class="cs">Celkové denní tržby v Kč</div></div></div><div style="position:relative;height:200px"><canvas id="cRev"></canvas></div></div>
-      <div class="card"><div class="ch"><div><div class="ct">Poslední transakce</div><div class="cs">Live z Nayax</div></div></div><div id="txList"><div class="empty">Načítám...</div></div></div>
-    </div>
-
-    <div class="g2 mb">
+    <div class="gm">
       <div class="card">
-        <div class="ch"><div><div class="ct">Podíl produktů na tržbách</div><div class="cs">Který produkt vydělává nejvíc</div></div></div>
-        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
-          <div style="width:160px;flex-shrink:0;margin:0 auto"><canvas id="cDonut"></canvas></div>
-          <div id="donutLeg" style="display:flex;flex-direction:column;gap:9px;flex:1;min-width:140px"></div>
-        </div>
+        <div class="ch"><div><div class="ct">Tržby po dnech</div><div class="cs">Celkové denní tržby v Kč</div></div></div>
+        <div style="position:relative;height:220px"><canvas id="cRev"></canvas></div>
       </div>
-      <div class="card"><div class="ch"><div><div class="ct">Platební metody</div><div class="cs">Jak zákazníci platí</div></div></div><div class="pay-list" id="payList"><div class="empty">Načítám...</div></div></div>
-    </div>
-
-    <div class="g2 mb">
-      <div class="card"><div class="ch"><div><div class="ct">Prodeje dle dne v týdnu</div><div class="cs">Průměrné tržby dle dne</div></div></div><div style="position:relative;height:175px"><canvas id="cWeek"></canvas></div></div>
       <div class="card">
-        <div class="ch"><div><div class="ct">Denní cíl</div><div class="cs">Pokrok dnešního dne</div></div></div>
-        <div class="goal-wrap">
-          <div class="goal-ring">
-            <svg width="100" height="100" viewBox="0 0 100 100"><circle class="grb" cx="50" cy="50" r="40"/><circle class="grf" id="gRing" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
-            <div class="goal-ctr"><div class="gpct" id="gPct">0%</div><div class="glbl">splněno</div></div>
-          </div>
-          <div class="goal-info">
-            <div class="gi-row"><span>Dnes</span><strong id="gToday">–</strong></div>
-            <div class="gi-row"><span>Cíl</span><strong id="gTarget">1 000 Kč</strong></div>
-            <div class="gi-row"><span>Zbývá</span><strong id="gLeft">–</strong></div>
-            <div class="gi-row"><span>Prodejů dnes</span><strong id="gSales">–</strong></div>
-          </div>
-        </div>
+        <div class="ch"><div><div class="ct">Poslední transakce</div><div class="cs">Nejnovější prodeje</div></div></div>
+        <div id="txList"><div class="empty">Načítám...</div></div>
       </div>
-    </div>
-
-    <div class="card mb">
-      <div class="ch"><div><div class="ct">Aktivita dle hodiny</div><div class="cs">Kdy se prodává nejvíc – počet transakcí dle dne a hodiny</div></div></div>
-      <div class="hm-wrap"><div id="heatmap"></div></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.66rem;color:var(--muted2)">
-        <span>Méně</span>
-        <div style="width:10px;height:10px;border-radius:2px;background:var(--surface3)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:rgba(79,142,247,.2)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:rgba(79,142,247,.5)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>
-        <span>Více</span>
-      </div>
-    </div>
-
-    <div class="g2 mb">
-      <div class="card"><div class="ch"><div><div class="ct">Srovnání týdnů</div><div class="cs">Tento (modrá) vs minulý týden (šedá) · Kč</div></div></div><div style="position:relative;height:180px"><canvas id="cCompare"></canvas></div></div>
-      <div class="card"><div class="ch"><div><div class="ct">Top produkty</div><div class="cs">Dle tržeb · počet kusů</div></div></div><div id="prodList"><div class="empty">Načítám...</div></div></div>
-    </div>
-
-    <div class="card mb">
-      <div class="ch"><div><div class="ct">Prodeje dle hodiny dne</div><div class="cs">Počet transakcí za každou hodinu</div></div></div>
-      <div style="position:relative;height:155px"><canvas id="cHour"></canvas></div>
     </div>
 
   </div>
@@ -295,122 +201,68 @@ if(sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const SLOTS={};
-const COLORS=['#4f8ef7','#22c55e','#f59e0b','#a78bfa','#ef4444','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6'];
 const DC=['Ne','Po','Út','St','Čt','Pá','So'];
-const DF=['Neděle','Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota'];
 const GOAL=1000;
-let AD=30,CH={};
+let AD=30,cRev;
 
-const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
 const fmts=v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v);
 const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||0);
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
+const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
 function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
 
-function processData(raw,days){
-  const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
+function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
   const sow=new Date(now);sow.setDate(now.getDate()-now.getDay()+1);sow.setHours(0,0,0,0);
-  const lws=new Date(sow);lws.setDate(lws.getDate()-7);
   const tod=new Date();tod.setHours(0,0,0,0);
   const f=sales.filter(s=>gd(s)>=cut);
-  const byDay={},byHourC=Array(24).fill(0),hm=Array.from({length:7},()=>Array(24).fill(0));
-  const byWD=Array(7).fill(0),bySlot={},thisW=Array(7).fill(0),lastW=Array(7).fill(0);
-  const byMeth={};
+  const byDay={};const byWD=Array(7).fill(0);
   let todR=0,todS=0,wkR=0,maxT=0,cashR=0,cardR=0;
   f.forEach(s=>{
-    const d=gd(s),a=ga(s),h=d.getHours(),wd=d.getDay(),meth=pm(s),slot=String(gs(s));
+    const d=gd(s),a=ga(s),wd=d.getDay(),m=pm(s);
     const key=d.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
     byDay[key]=(byDay[key]||0)+a;
-    byHourC[h]++;
-    hm[wd][h]++;
     byWD[wd]+=a;
-    byMeth[meth]=(byMeth[meth]||0)+a;
-    if(!bySlot[slot])bySlot[slot]={count:0,revenue:0};
-    bySlot[slot].count++;bySlot[slot].revenue+=a;
-    if(d>=sow){thisW[wd]+=a;wkR+=a;}
-    else if(d>=lws&&d<sow)lastW[wd]+=a;
+    if(d>=sow)wkR+=a;
     if(d>=tod){todR+=a;todS++;}
     if(a>maxT)maxT=a;
-    if(meth==='Hotovost')cashR+=a;else cardR+=a;
+    if(m==='Hotovost')cashR+=a;else cardR+=a;
   });
-  const prods=Object.entries(bySlot).map(([slot,d])=>({name:sn(slot),slot,...d})).sort((a,b)=>b.revenue-a.revenue);
-  const mc=prods[0]?.count||1;
   const tr=f.reduce((s,t)=>s+ga(t),0),ts=f.length,av=ts?tr/ts:0;
   const bi=byWD.indexOf(Math.max(...byWD));
-  const lastTx=[...f].sort((a,b)=>gd(b)-gd(a)).slice(0,10).map(s=>{const m=pm(s);return{time:gd(s).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
-  const payM=Object.entries(byMeth).map(([n,r])=>({n,r})).sort((a,b)=>b.r-a.r);
-  const totPay=payM.reduce((s,p)=>s+p.r,0)||1;
-  const hmMax=Math.max(...hm.flat())||1;
-  const hmN=hm.map(row=>row.map(v=>v===0?0:Math.min(5,Math.ceil(v/hmMax*5))));
-  return{byDay,byHourC,hm:hmN,byWD,thisW,lastW,lastTx,prods:prods.map(p=>({...p,pct:Math.round(p.count/mc*100)})),payM,totPay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,maxT,cashR,cardR};
+  const lastTx=[...f].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:gd(s).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
+  return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,maxT,cashR,cardR,lastTx};
+}
+
+function generateMockData(){
+  const products=[{slot:'8',name:'Booster Pack SV',price:170},{slot:'10',name:'Tin Box',price:300},{slot:'13',name:'Pikachu Promo',price:60},{slot:'18',name:'Charizard ETB',price:400},{slot:'24',name:'Booster Pack XY',price:150},{slot:'3',name:'Blister Pack',price:120},{slot:'5',name:'Mini Tin',price:85}];
+  const methods=['Karta','Karta','Karta','Visa','Mastercard','Hotovost','Apple Pay','Google Pay'];
+  const sales=[];const now=new Date();
+  for(let day=89;day>=0;day--){
+    const d=new Date(now);d.setDate(d.getDate()-day);
+    const isWE=d.getDay()===0||d.getDay()===6;
+    const count=isWE?Math.floor(Math.random()*8)+12:Math.floor(Math.random()*6)+7;
+    for(let i=0;i<count;i++){
+      const hour=Math.random()<0.7?Math.floor(Math.random()*9)+10:Math.floor(Math.random()*24);
+      const dt=new Date(d);dt.setHours(hour,Math.floor(Math.random()*60),0,0);
+      const weights=[3,2,4,1,3,2,2];const rand=Math.random()*17;let wi=0,ws=0;
+      for(let j=0;j<weights.length;j++){ws+=weights[j];if(rand<ws){wi=j;break;}}
+      const prod=products[wi];
+      sales.push({AuthorizationDateTimeGMT:dt.toISOString(),SettlementValue:prod.price,Selection:prod.slot,PaymentMethod:methods[Math.floor(Math.random()*methods.length)]});
+    }
+  }
+  return sales;
 }
 
 Chart.defaults.color='#5a5a6a';Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.font.size=10.5;
 const TT={backgroundColor:'#18181d',borderColor:'rgba(255,255,255,0.07)',borderWidth:1,titleColor:'#e8e8ec',bodyColor:'#8888a0',padding:10};
-function dc2(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 
-function renderRev(byDay){
-  dc2('r');const ctx=document.getElementById('cRev');
-  const g=ctx.getContext('2d').createLinearGradient(0,0,0,200);
-  g.addColorStop(0,'rgba(79,142,247,.18)');g.addColorStop(1,'rgba(79,142,247,0)');
-  CH.r=new Chart(ctx,{type:'line',data:{labels:Object.keys(byDay),datasets:[{data:Object.values(byDay),borderColor:'#4f8ef7',backgroundColor:g,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
-}
-
-function renderDonut(prods){
-  dc2('d');const ctx=document.getElementById('cDonut');
-  const top=prods.slice(0,8),tot=top.reduce((s,p)=>s+p.revenue,0)||1;
-  CH.d=new Chart(ctx,{type:'doughnut',data:{labels:top.map(p=>p.name),datasets:[{data:top.map(p=>p.revenue),backgroundColor:COLORS.slice(0,top.length),borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed).toLocaleString('cs-CZ')} Kč (${Math.round(c.parsed/tot*100)}%)`}}}}});
-  document.getElementById('donutLeg').innerHTML=top.map((p,i)=>`<div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:2px;background:${COLORS[i]};flex-shrink:0"></div><span style="font-size:.76rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</span><span style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted2)">${Math.round(p.revenue/tot*100)}%</span></div>`).join('');
-}
-
-function renderWeek(byWD){
-  dc2('w');const mx=Math.max(...byWD)||1;
-  CH.w=new Chart(document.getElementById('cWeek'),{type:'bar',data:{labels:DC,datasets:[{data:byWD,backgroundColor:byWD.map(v=>v===mx?'#4f8ef7':'rgba(79,142,247,.2)'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
-}
-
-function renderCompare(tw,lw){
-  dc2('c');
-  CH.c=new Chart(document.getElementById('cCompare'),{type:'bar',data:{labels:DC,datasets:[{label:'Tento týden',data:tw,backgroundColor:'rgba(79,142,247,.7)',borderRadius:4,borderSkipped:false},{label:'Minulý týden',data:lw,backgroundColor:'rgba(255,255,255,.08)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#8888a0',boxWidth:10,padding:12,font:{size:11}}},tooltip:{...TT,callbacks:{label:c=>`  ${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
-}
-
-function renderHour(byHourC){
-  dc2('h');
-  CH.h=new Chart(document.getElementById('cHour'),{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i+':00'),datasets:[{data:byHourC,backgroundColor:'rgba(167,139,250,.4)',hoverBackgroundColor:'rgba(167,139,250,.8)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${c.parsed.y} prodejů`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:12}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{precision:0}}}}});
-}
-
-function renderHeatmap(hm){
-  const hrs=Array.from({length:24},(_,i)=>String(i).padStart(2,'0'));
-  let html='<div class="hm-grid"><div></div>';
-  hrs.forEach(h=>html+=`<div class="hm-h">${h}</div>`);
-  DC.forEach((day,di)=>{
-    html+=`<div class="hm-d">${day}</div>`;
-    hm[di].forEach((v,hi)=>html+=`<div class="hm-c h${v}" title="${DF[di]} ${hi}:00 – ${hm[di][hi]}× prodáno"></div>`);
-  });
-  html+='</div>';
-  document.getElementById('heatmap').innerHTML=html;
-}
-
-function renderPay(payM,tot){
-  const icons={'Visa':'💳','Mastercard':'💳','Hotovost':'💵','Apple Pay':'🍎','Google Pay':'🔵','Karta':'💳'};
-  const colors={'Visa':'#4f8ef7','Mastercard':'#f59e0b','Hotovost':'#22c55e','Apple Pay':'#e8e8ec','Google Pay':'#4285f4','Karta':'#a78bfa'};
-  document.getElementById('payList').innerHTML=payM.map(p=>{const pct=Math.round(p.r/tot*100);return`<div class="pay-row"><div class="pay-ico">${icons[p.n]||'💳'}</div><div class="pay-name">${p.n}</div><div class="pay-bw"><div class="pay-b" style="width:${pct}%;background:${colors[p.n]||'#4f8ef7'}"></div></div><div class="pay-pct">${pct}%</div></div>`;}).join('')||'<div class="empty">Žádná data</div>';
-}
-
-function renderProds(prods){
-  if(!prods.length){document.getElementById('prodList').innerHTML='<div class="empty">Žádné produkty</div>';return;}
-  document.getElementById('prodList').innerHTML=prods.slice(0,7).map((p,i)=>`<div class="pr"><div class="prk">${i+1}</div><div class="pi"><div class="pn">${p.name}</div><div class="ps">Slot ${p.slot}</div></div><div class="pbw"><div class="pb" style="width:${p.pct}%"></div></div><div class="pc">${p.count}×</div><div class="pv">${fmt(p.revenue)}</div></div>`).join('');
-}
-
-function renderTx(txs){
-  if(!txs.length){document.getElementById('txList').innerHTML='<div class="empty">Žádné transakce</div>';return;}
-  document.getElementById('txList').innerHTML=txs.map(t=>`<div class="tx-row"><div class="tx-dot ${t.dot}"></div><div class="tt">${t.time}</div><div class="tp">${t.product}</div><div class="tm">${t.method}</div><div class="ta">${fmt(t.amount)}</div></div>`).join('');
-}
-
-function renderStats(d){
+function renderAll(sales){
+  const d=processData(sales,AD);
+  // Stats
   document.getElementById('v-rev').textContent=fmt(d.tr);
   document.getElementById('b1').textContent=`${d.ts} prod.`;
   document.getElementById('s-rev').innerHTML=`za posledních <strong>${AD} dní</strong>`;
@@ -427,77 +279,36 @@ function renderStats(d){
   const cp=d.tr?Math.round(d.cashR/d.tr*100):0;
   document.getElementById('v-split').textContent=`${cp}% / ${100-cp}%`;
   document.getElementById('s-split').innerHTML=`hotovost <strong>${fmt(d.cashR)}</strong> · karta <strong>${fmt(d.cardR)}</strong>`;
-  const pct=Math.min(100,Math.round(d.todR/GOAL*100));
-  document.getElementById('gRing').style.strokeDashoffset=251.2-(251.2*pct/100);
-  document.getElementById('gPct').textContent=pct+'%';
-  document.getElementById('gToday').textContent=fmt(d.todR);
-  document.getElementById('gLeft').textContent=d.todR>=GOAL?'✅ Splněno!':fmt(Math.max(0,GOAL-d.todR));
-  document.getElementById('gSales').textContent=d.todS;
-}
-
-function generateMockData(){
-  const products=[
-    {slot:'8', name:'Booster Pack SV',price:170},
-    {slot:'10',name:'Tin Box',price:300},
-    {slot:'13',name:'Pikachu Promo',price:60},
-    {slot:'18',name:'Charizard ETB',price:400},
-    {slot:'24',name:'Booster Pack XY',price:150},
-    {slot:'3', name:'Blister Pack',price:120},
-    {slot:'5', name:'Mini Tin',price:85},
-  ];
-  const methods=['Karta','Karta','Karta','Visa','Mastercard','Hotovost','Apple Pay','Google Pay'];
-  const sales=[];
-  const now=new Date();
-  // Generuj ~10 prodejů denně za posledních 90 dní
-  for(let day=89;day>=0;day--){
-    // Víkendy mají více prodejů
-    const d=new Date(now);d.setDate(d.getDate()-day);
-    const isWeekend=d.getDay()===0||d.getDay()===6;
-    const count=isWeekend?Math.floor(Math.random()*8)+12:Math.floor(Math.random()*6)+7;
-    for(let i=0;i<count;i++){
-      // Aktivnější hodiny 10-18
-      const hour=Math.random()<0.7?Math.floor(Math.random()*9)+10:Math.floor(Math.random()*24);
-      const min=Math.floor(Math.random()*60);
-      const dt=new Date(d);dt.setHours(hour,min,0,0);
-      // Charizard ETB se prodává méně
-      const weights=[3,2,4,1,3,2,2];
-      const rand=Math.random()*17;let wi=0,wsum=0;
-      for(let j=0;j<weights.length;j++){wsum+=weights[j];if(rand<wsum){wi=j;break;}}
-      const prod=products[wi];
-      sales.push({
-        AuthorizationDateTimeGMT:dt.toISOString(),
-        SettlementValue:prod.price,
-        Selection:prod.slot,
-        ProductName:prod.name,
-        PaymentMethod:methods[Math.floor(Math.random()*methods.length)],
-      });
-    }
-  }
-  return sales;
+  // Revenue chart
+  if(cRev)cRev.destroy();
+  const ctx=document.getElementById('cRev');
+  const g=ctx.getContext('2d').createLinearGradient(0,0,0,220);
+  g.addColorStop(0,'rgba(79,142,247,.18)');g.addColorStop(1,'rgba(79,142,247,0)');
+  cRev=new Chart(ctx,{type:'line',data:{labels:Object.keys(d.byDay),datasets:[{data:Object.values(d.byDay),borderColor:'#4f8ef7',backgroundColor:g,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
+  // Transactions
+  document.getElementById('txList').innerHTML=d.lastTx.length
+    ?d.lastTx.map(t=>`<div class="tx-row"><div class="tx-dot ${t.dot}"></div><div class="tt">${t.time}</div><div class="tp">${t.product}</div><div class="tm">${t.method}</div><div class="ta">${fmt(t.amount)}</div></div>`).join('')
+    :'<div class="empty">Žádné transakce</div>';
+  // Save to sessionStorage for grafy.html
+  sessionStorage.setItem('salesData',JSON.stringify(sales));
 }
 
 async function loadData(){
   document.getElementById('loading').style.display='flex';
-  document.getElementById('errBanner').style.display='none';
   try{
     const res=await fetch('/api/sales');
-    if(!res.ok)throw new Error(`HTTP ${res.status} – ${await res.text()}`);
+    if(!res.ok)throw new Error(`${res.status}`);
     const raw=await res.json();
-    const d=processData(raw,AD);
-    renderStats(d);renderRev(d.byDay);renderDonut(d.prods);renderWeek(d.byWD);
-    renderCompare(d.thisW,d.lastW);renderHour(d.byHourC);renderHeatmap(d.hm);
-    renderPay(d.payM,d.totPay);renderProds(d.prods);renderTx(d.lastTx);
+    const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
+    renderAll(sales);
+    document.getElementById('demoBadge').style.display='none';
     document.getElementById('apiDot').classList.remove('red');
     document.getElementById('apiStatus').textContent='Nayax · online';
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
   }catch(e){
-    console.error(e);
-    // API nefunguje → použij mock data
     const mock=generateMockData();
-    const d=processData(mock,AD);
-    renderStats(d);renderRev(d.byDay);renderDonut(d.prods);renderWeek(d.byWD);
-    renderCompare(d.thisW,d.lastW);renderHour(d.byHourC);renderHeatmap(d.hm);
-    renderPay(d.payM,d.totPay);renderProds(d.prods);renderTx(d.lastTx);
+    renderAll(mock);
+    document.getElementById('demoBadge').style.display='inline-flex';
     document.getElementById('apiDot').classList.add('red');
     document.getElementById('apiStatus').textContent='Demo data';
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})+' · demo';
