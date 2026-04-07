@@ -1,48 +1,38 @@
+const historyData = require('./history.json');
+
 export default async function handler(req, res) {
-  // CORS hlavicky
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const TOKEN      = process.env.NAYAX_TOKEN;
   const MACHINE_ID = process.env.NAYAX_MACHINE_ID;
 
-  if (!TOKEN || !MACHINE_ID) {
-    return res.status(500).json({ error: 'Chybí environment variables na Vercelu.' });
-  }
-
-  try {
-    // Zkusíme oba možné endpointy
-    const urls = [
-      `https://lynx.nayax.com/operational/api/v1/machines/${MACHINE_ID}/lastSales`,
-      `https://lynx.nayax.com/operational/v1/machines/${MACHINE_ID}/lastSales`,
-    ];
-
-    let response, lastError;
-    for (const url of urls) {
-      response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${TOKEN}`,
-          'Content-Type': 'application/json',
+  // Zkus live Nayax API
+  if (TOKEN && MACHINE_ID) {
+    try {
+      const urls = [
+        `https://lynx.nayax.com/operational/v1/machines/${MACHINE_ID}/lastSales`,
+        `https://lynx.nayax.com/operational/api/v1/machines/${MACHINE_ID}/lastSales`,
+      ];
+      for (const url of urls) {
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          const liveData = await response.json();
+          const liveSales = Array.isArray(liveData) ? liveData : (liveData.Sales || liveData.data || []);
+          // Spoj live data s historickými (bez duplikátů)
+          const liveIds = new Set(liveSales.map(s => s.AuthorizationDateTimeGMT));
+          const merged = [...liveSales, ...historyData.filter(s => !liveIds.has(s.AuthorizationDateTimeGMT))];
+          return res.status(200).json(merged);
         }
-      });
-      if (response.ok) break;
-      lastError = `${url} → HTTP ${response.status}`;
+      }
+    } catch(e) {
+      console.log('Live API nedostupná, vracím historická data:', e.message);
     }
-
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: `Nayax API error: ${response.status}`, detail: text, tried: lastError });
-    }
-
-    const data = await response.json();
-    return res.status(200).json(data);
-
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
   }
+
+  // Fallback: historická data z xlsx
+  return res.status(200).json(historyData);
 }
