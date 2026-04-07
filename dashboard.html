@@ -215,13 +215,13 @@ const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
 function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
 
-function toLocal(d){
-  // Převod UTC na české lokální datum (UTC+2 letní čas)
-  return new Date(d.getTime() + 2*60*60*1000);
+// Získá lokální datum z UTC timestampu (správná timezone prohlížeče)
+function localDate(d){
+  return new Date(d.toLocaleString('en-US',{timeZone:'Europe/Prague'}));
 }
-function startOfDay(){const n=toLocal(new Date());return new Date(n.getFullYear(),n.getMonth(),n.getDate());}
-function startOfWeek(){const t=startOfDay();const dow=toLocal(new Date()).getDay();const d=dow===0?6:dow-1;t.setDate(t.getDate()-d);return t;}
-function startOfMonth(){const n=toLocal(new Date());return new Date(n.getFullYear(),n.getMonth(),1);}
+function startOfDay(){const n=new Date();const l=localDate(n);return new Date(l.getFullYear(),l.getMonth(),l.getDate());}
+function startOfWeek(){const t=startOfDay();const dow=t.getDay();const d=dow===0?6:dow-1;t.setDate(t.getDate()-d);return t;}
+function startOfMonth(){const t=startOfDay();return new Date(t.getFullYear(),t.getMonth(),1);}
 
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
@@ -233,7 +233,7 @@ function processData(sales,days){
   // Graf – filtrované období
   const byDay={};const byWD=Array(7).fill(0);let maxT=0;
   f.forEach(s=>{
-    const dLoc=toLocal(gd(s)),a=ga(s),wd=dLoc.getDay();
+    const dLoc=localDate(gd(s)),a=ga(s),wd=dLoc.getDay();
     const key=dLoc.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
     byDay[key]=(byDay[key]||0)+a;
     byWD[wd]+=a;
@@ -243,7 +243,7 @@ function processData(sales,days){
   // Dnes/týden/měsíc – vždy ze VŠECH dat
   let todR=0,todS=0,wkR=0,monthR=0,cashR=0,cardR=0;
   sales.forEach(s=>{
-    const dLoc=toLocal(gd(s)),a=ga(s),m=pm(s);
+    const dLoc=localDate(gd(s)),a=ga(s),m=pm(s);
     if(dLoc>=tod){todR+=a;todS++;}
     if(dLoc>=sow)wkR+=a;
     if(dLoc>=som)monthR+=a;
@@ -254,7 +254,7 @@ function processData(sales,days){
   const totalS=sales.length;
   const tr=f.reduce((s,t)=>s+ga(t),0),ts=f.length,av=ts?tr/ts:0;
   const bi=byWD.indexOf(Math.max(...byWD));
-  const lastTx=[...sales].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:toLocal(gd(s)).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
+  const lastTx=[...sales].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:localDate(gd(s)).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
   return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,monthR,maxT,cashR,cardR,totalR,totalS,lastTx};
 }
 
