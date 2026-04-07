@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon Automat – Prodeje</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0c;--surface:#111114;--surface2:#18181d;--surface3:#1f1f26;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+  --text:#e8e8ec;--muted:#5a5a6a;--muted2:#8888a0;
+  --accent:#4f8ef7;--accent2:#22c55e;--warn:#f59e0b;--danger:#ef4444;--purple:#a78bfa;
+  --r:12px;--rl:16px;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+.layout{display:flex;min-height:100vh}
+
+.sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:.25rem .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+.logo-text{font-size:.82rem;font-weight:700;line-height:1.2}
+.logo-text span{display:block;font-size:.66rem;font-weight:400;color:var(--muted2);margin-top:1px}
+.nav-sec{margin-bottom:1.1rem}
+.nav-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:0 .6rem;margin-bottom:.3rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;transition:all .15s;margin-bottom:1px;text-decoration:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(79,142,247,.1);color:var(--accent)}
+.nav-ico{font-size:.95rem;width:17px;text-align:center;flex-shrink:0}
+.sidebar-foot{margin-top:auto;padding-top:.875rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.api-st{display:flex;align-items:center;gap:7px;padding:.5rem .6rem;background:var(--surface2);border-radius:8px;font-size:.72rem;color:var(--muted2)}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);box-shadow:0 0 5px var(--accent2);animation:blink 2s ease-in-out infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.btn-logout{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;border:none;background:none;font-family:inherit;width:100%;transition:all .15s}
+.btn-logout:hover{background:rgba(239,68,68,.08);color:var(--danger)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
+.topbar h1{font-size:1rem;font-weight:600;letter-spacing:-.02em}
+.topbar p{font-size:.72rem;color:var(--muted2);margin-top:1px}
+.content{padding:1.5rem 1.75rem;flex:1}
+
+.loading-overlay{position:fixed;inset:0;background:rgba(10,10,12,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:1rem;font-size:.88rem;color:var(--muted2);backdrop-filter:blur(4px)}
+.spinner{width:34px;height:34px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1.5rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1rem 1.25rem;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.sc-blue::after{background:linear-gradient(90deg,var(--accent) 50%,transparent)}
+.sc-green::after{background:linear-gradient(90deg,var(--accent2) 60%,transparent)}
+.sc-warn::after{background:linear-gradient(90deg,var(--warn) 45%,transparent)}
+.sc-purple::after{background:linear-gradient(90deg,var(--purple) 40%,transparent)}
+.sl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:.6rem}
+.sv{font-size:1.6rem;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:.25rem}
+.ss{font-size:.7rem;color:var(--muted2)}
+.ss strong{color:var(--text);font-weight:600}
+
+/* FILTERS */
+.filters{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-wrap input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 14px 9px 36px;color:var(--text);font-family:inherit;font-size:.82rem;outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--text);font-family:inherit;font-size:.82rem;outline:none;cursor:pointer;transition:border-color .15s}
+.filter-select:focus{border-color:var(--accent)}
+.filter-info{font-size:.75rem;color:var(--muted2);margin-left:auto;white-space:nowrap}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
+th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s}
+th:hover{color:var(--text)}
+th.sorted{color:var(--accent)}
+th .sort-ico{margin-left:4px;opacity:.5}
+th.sorted .sort-ico{opacity:1}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+td{padding:.7rem 1rem;vertical-align:middle}
+.td-num{font-family:'DM Mono',monospace;font-size:.75rem}
+.td-date{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted2);white-space:nowrap}
+.td-amount{font-family:'DM Mono',monospace;font-weight:600;color:var(--accent2)}
+.td-slot{font-size:.72rem;color:var(--muted2)}
+.badge-pm{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:600}
+.pm-karta{background:rgba(79,142,247,.12);color:var(--accent)}
+.pm-visa{background:rgba(79,142,247,.12);color:var(--accent)}
+.pm-master{background:rgba(245,158,11,.12);color:var(--warn)}
+.pm-cash{background:rgba(34,197,94,.12);color:var(--accent2)}
+.pm-apple{background:rgba(255,255,255,.08);color:var(--text)}
+.pm-google{background:rgba(167,139,250,.12);color:var(--purple)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.pg-info{font-size:.75rem;color:var(--muted2)}
+.pg-btns{display:flex;gap:4px}
+.pg-btn{padding:5px 12px;border-radius:7px;font-size:.75rem;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;font-family:inherit}
+.pg-btn:hover{background:var(--surface2);color:var(--text)}
+.pg-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+.pg-btn:disabled{opacity:.3;cursor:default}
+
+.empty-state{padding:3rem;text-align:center;color:var(--muted2);font-size:.85rem}
+
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <span>Načítám prodeje...</span>
+</div>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎮</div>
+    <div class="logo-text">Pokémon Automat <span>Nayax · Live Dashboard</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Navigace</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-ico">📊</span> Dashboard</a>
+    <a href="grafy.html" class="nav-item"><span class="nav-ico">📈</span> Grafy</a>
+    <a href="prodeje.html" class="nav-item active"><span class="nav-ico">🧾</span> Prodeje</a>
+    <a href="produkty.html" class="nav-item"><span class="nav-ico">📦</span> Produkty</a>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Automat</div>
+    <a href="stav.html" class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</a>
+    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
+  </div>
+  <div class="sidebar-foot">
+    <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">–</span></div>
+    <button class="btn-logout" onclick="logout()"><span class="nav-ico">🚪</span> Odhlásit se</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div><h1>Přehled prodejů</h1><p>Všechny transakce od začátku provozu</p></div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="sc sc-blue"><div class="sl">Celkem prodejů</div><div class="sv" id="sTotalCount">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-green"><div class="sl">Celkové tržby</div><div class="sv" id="sTotalRev">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-warn"><div class="sl">Tento měsíc</div><div class="sv" id="sMonthCount">–</div><div class="ss" id="sMonthName">prodejů</div></div>
+      <div class="sc sc-purple"><div class="sl">Tržby tento měsíc</div><div class="sv" id="sMonthRev">–</div><div class="ss" id="sMonthRevSub">–</div></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input type="text" id="searchInput" placeholder="Hledat slot, platební metoda..." oninput="applyFilters()">
+      </div>
+      <select class="filter-select" id="filterMonth" onchange="applyFilters()">
+        <option value="">Všechny měsíce</option>
+      </select>
+      <select class="filter-select" id="filterSlot" onchange="applyFilters()">
+        <option value="">Všechny sloty</option>
+      </select>
+      <select class="filter-select" id="filterMethod" onchange="applyFilters()">
+        <option value="">Všechny platby</option>
+        <option value="Karta">Karta</option>
+        <option value="Visa">Visa</option>
+        <option value="Mastercard">Mastercard</option>
+        <option value="Hotovost">Hotovost</option>
+        <option value="Apple Pay">Apple Pay</option>
+        <option value="Google Pay">Google Pay</option>
+      </select>
+      <div class="filter-info" id="filterInfo">–</div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('idx')">#<span class="sort-ico" id="sort-idx">↕</span></th>
+              <th onclick="sortBy('date')">Datum a čas<span class="sort-ico" id="sort-date">↕</span></th>
+              <th onclick="sortBy('slot')">Slot<span class="sort-ico" id="sort-slot">↕</span></th>
+              <th onclick="sortBy('amount')">Částka<span class="sort-ico" id="sort-amount">↕</span></th>
+              <th onclick="sortBy('method')">Platba<span class="sort-ico" id="sort-method">↕</span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <div class="pg-info" id="pgInfo">–</div>
+        <div class="pg-btns" id="pgBtns"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+if(sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
+
+const SLOTS={};
+const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
+const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
+const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||0);
+const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||0);
+const gs=t=>String(t.Selection||t.SlotNumber||'?');
+
+const MONTHS_CS=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+
+function pmClass(m){
+  if(m==='Hotovost')return'pm-cash';
+  if(m==='Visa')return'pm-visa';
+  if(m==='Mastercard')return'pm-master';
+  if(m==='Apple Pay')return'pm-apple';
+  if(m==='Google Pay')return'pm-google';
+  return'pm-karta';
+}
+
+function pmIcon(m){
+  if(m==='Hotovost')return'💵';
+  if(m==='Apple Pay')return'🍎';
+  if(m==='Google Pay')return'🔵';
+  return'💳';
+}
+
+let allSales=[], filtered=[], sortKey='date', sortDir=-1, page=1;
+const PAGE_SIZE=50;
+
+function buildSales(raw){
+  const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
+  return sales.map((s,i)=>({
+    idx: i+1,
+    date: gd(s),
+    slot: gs(s),
+    amount: ga(s),
+    method: s.PaymentMethod||'Karta',
+    raw: s,
+  })).sort((a,b)=>b.date-a.date).map((s,i)=>({...s,idx:i+1}));
+}
+
+function populateFilters(sales){
+  // Měsíce
+  const months=new Map();
+  sales.forEach(s=>{
+    const key=`${s.date.getFullYear()}-${String(s.date.getMonth()+1).padStart(2,'0')}`;
+    const label=`${MONTHS_CS[s.date.getMonth()]} ${s.date.getFullYear()}`;
+    months.set(key,label);
+  });
+  const mSel=document.getElementById('filterMonth');
+  [...months.entries()].sort((a,b)=>b[0].localeCompare(a[0])).forEach(([k,v])=>{
+    const o=document.createElement('option');o.value=k;o.textContent=v;mSel.appendChild(o);
+  });
+
+  // Sloty
+  const slots=[...new Set(sales.map(s=>s.slot))].sort((a,b)=>Number(a)-Number(b));
+  const sSel=document.getElementById('filterSlot');
+  slots.forEach(slot=>{
+    const o=document.createElement('option');o.value=slot;o.textContent=sn(slot);sSel.appendChild(o);
+  });
+}
+
+function renderStats(sales){
+  const now=new Date();
+  const thisMonth=sales.filter(s=>s.date.getMonth()===now.getMonth()&&s.date.getFullYear()===now.getFullYear());
+  const totalRev=sales.reduce((s,t)=>s+t.amount,0);
+  const monthRev=thisMonth.reduce((s,t)=>s+t.amount,0);
+
+  document.getElementById('sTotalCount').textContent=sales.length.toLocaleString('cs-CZ');
+  document.getElementById('sTotalRev').textContent=fmt(totalRev);
+  document.getElementById('sMonthCount').textContent=thisMonth.length.toLocaleString('cs-CZ');
+  document.getElementById('sMonthName').textContent=`prodejů · ${MONTHS_CS[now.getMonth()]}`;
+  document.getElementById('sMonthRev').textContent=fmt(monthRev);
+  document.getElementById('sMonthRevSub').textContent=MONTHS_CS[now.getMonth()]+' '+now.getFullYear();
+}
+
+function applyFilters(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const month=document.getElementById('filterMonth').value;
+  const slot=document.getElementById('filterSlot').value;
+  const method=document.getElementById('filterMethod').value;
+
+  filtered=allSales.filter(s=>{
+    if(search&&!sn(s.slot).toLowerCase().includes(search)&&!s.method.toLowerCase().includes(search)&&!s.slot.includes(search))return false;
+    if(month){const k=`${s.date.getFullYear()}-${String(s.date.getMonth()+1).padStart(2,'0')}`;if(k!==month)return false;}
+    if(slot&&s.slot!==slot)return false;
+    if(method&&s.method!==method)return false;
+    return true;
+  });
+
+  applySort();
+  page=1;
+  render();
+}
+
+function sortBy(key){
+  if(sortKey===key)sortDir*=-1;
+  else{sortKey=key;sortDir=key==='date'?-1:1;}
+  document.querySelectorAll('th').forEach(th=>th.classList.remove('sorted'));
+  document.querySelectorAll('.sort-ico').forEach(ic=>ic.textContent='↕');
+  const th=document.querySelector(`[onclick="sortBy('${key}')"]`);
+  if(th){th.classList.add('sorted');th.querySelector('.sort-ico').textContent=sortDir===1?'↑':'↓';}
+  applySort();
+  render();
+}
+
+function applySort(){
+  filtered.sort((a,b)=>{
+    let va=a[sortKey],vb=b[sortKey];
+    if(sortKey==='date'){return sortDir*(va-vb);}
+    if(sortKey==='amount'){return sortDir*(va-vb);}
+    if(sortKey==='slot'){return sortDir*(Number(va)-Number(vb));}
+    return sortDir*String(va).localeCompare(String(vb));
+  });
+}
+
+function render(){
+  const start=(page-1)*PAGE_SIZE;
+  const end=start+PAGE_SIZE;
+  const pageData=filtered.slice(start,end);
+
+  document.getElementById('filterInfo').textContent=
+    filtered.length===allSales.length
+      ?`${allSales.length.toLocaleString('cs-CZ')} prodejů celkem`
+      :`${filtered.length.toLocaleString('cs-CZ')} z ${allSales.length.toLocaleString('cs-CZ')} prodejů`;
+
+  const tbody=document.getElementById('tableBody');
+  if(!pageData.length){
+    tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state">Žádné prodeje neodpovídají filtru</div></td></tr>`;
+  } else {
+    tbody.innerHTML=pageData.map(s=>{
+      const dateStr=s.date.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const timeStr=s.date.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      return`<tr>
+        <td class="td-num" style="color:var(--muted)">${s.idx}</td>
+        <td class="td-date">${dateStr} ${timeStr}</td>
+        <td><strong>${sn(s.slot)}</strong> <span class="td-slot">(slot ${s.slot})</span></td>
+        <td class="td-amount">${fmt(s.amount)}</td>
+        <td><span class="badge-pm ${pmClass(s.method)}">${pmIcon(s.method)} ${s.method}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPagination();
+}
+
+function renderPagination(){
+  const total=filtered.length;
+  const pages=Math.ceil(total/PAGE_SIZE);
+  const start=(page-1)*PAGE_SIZE+1;
+  const end=Math.min(page*PAGE_SIZE,total);
+
+  document.getElementById('pgInfo').textContent=
+    total>0?`Zobrazuji ${start}–${end} z ${total.toLocaleString('cs-CZ')} prodejů`:'Žádné výsledky';
+
+  const btns=document.getElementById('pgBtns');
+  let html=`<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
+
+  let from=Math.max(1,page-2),to=Math.min(pages,page+2);
+  if(from>1)html+=`<button class="pg-btn" onclick="goPage(1)">1</button>${from>2?'<span style="color:var(--muted);padding:0 4px">…</span>':''}`;
+  for(let i=from;i<=to;i++)html+=`<button class="pg-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  if(to<pages)html+=`${to<pages-1?'<span style="color:var(--muted);padding:0 4px">…</span>':''}<button class="pg-btn" onclick="goPage(${pages})">${pages}</button>`;
+
+  html+=`<button class="pg-btn" onclick="goPage(${page+1})" ${page===pages?'disabled':''}>›</button>`;
+  btns.innerHTML=html;
+}
+
+function goPage(p){
+  const pages=Math.ceil(filtered.length/PAGE_SIZE);
+  if(p<1||p>pages)return;
+  page=p;
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function loadData(){
+  document.getElementById('loading').style.display='flex';
+  try{
+    const res=await fetch('/api/sales');
+    if(!res.ok)throw new Error(`${res.status}`);
+    const raw=await res.json();
+    allSales=buildSales(raw);
+    filtered=[...allSales];
+    renderStats(allSales);
+    populateFilters(allSales);
+    applySort();
+    render();
+    document.getElementById('apiDot').style.background='var(--accent2)';
+    document.getElementById('apiStatus').textContent=`${allSales.length} prodejů`;
+  }catch(e){
+    console.error(e);
+    document.getElementById('apiStatus').textContent='Chyba';
+  }finally{
+    document.getElementById('loading').style.display='none';
+  }
+}
+
+// Nastavíme výchozí sort
+document.querySelector(`[onclick="sortBy('date')"]`).classList.add('sorted');
+document.getElementById('sort-date').textContent='↓';
+
+loadData();
+</script>
+</body>
+</html>
