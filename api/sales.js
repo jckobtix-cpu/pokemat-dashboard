@@ -134,6 +134,38 @@ export default async function handler(req, res) {
       }
     }
     
+    // 3b. Pošli Discord notifikaci pro nové prodeje
+    if (sqsSales.length > 0) {
+      const DISCORD = process.env.DISCORD_WEBHOOK;
+      if (DISCORD) {
+        for (const sale of sqsSales) {
+          const pm = sale.PaymentMethod === 'Hotovost' ? '💵 Hotovost' : '💳 Karta';
+          const slot = sale.Selection !== '?' ? `Slot ${sale.Selection}` : 'Neznámý slot';
+          const product = sale.ProductName ? sale.ProductName : slot;
+          const amount = Math.round(sale.SettlementValue);
+          const time = sale.AuthorizationDateTimeGMT.replace('T', ' ').slice(0, 16);
+          
+          await fetch(DISCORD, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              embeds: [{
+                title: '🎮 Nový prodej!',
+                color: 0x22c55e,
+                fields: [
+                  { name: '📦 Produkt', value: product, inline: true },
+                  { name: '💰 Částka', value: `${amount} Kč`, inline: true },
+                  { name: '💳 Platba', value: pm, inline: true },
+                  { name: '🕐 Čas', value: time, inline: true },
+                ],
+                footer: { text: 'Pokémon Automat · Nayax' }
+              }]
+            })
+          }).catch(() => {});
+        }
+      }
+    }
+
     // 4. Spoj: Redis (nové) + history.json (historické)
     const historyKeys = new Set(historyData.map(s => s.AuthorizationDateTimeGMT + s.SettlementValue));
     const onlyNew = savedSales.filter(s => !historyKeys.has(s.AuthorizationDateTimeGMT + s.SettlementValue));
