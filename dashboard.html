@@ -212,7 +212,7 @@ const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.Transact
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
 const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
-function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
+function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';return'Karta';}
 function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
 
 // Data jsou ulozena v ceskem case (ne UTC) i kdyz maji Z suffix
