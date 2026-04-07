@@ -208,20 +208,36 @@ let AD=30,cRev;
 
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
 const fmts=v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v);
-const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||0);
+const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||'');
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
 const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
 function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
 
-// Získá lokální datum z UTC timestampu (správná timezone prohlížeče)
-function localDate(d){
-  return new Date(d.toLocaleString('en-US',{timeZone:'Europe/Prague'}));
+// Data jsou ulozena v ceskem case (ne UTC) i kdyz maji Z suffix
+// Bereme cas tak jak je - bez konverze timezone
+function parseDate(s){
+  // Odstranime Z suffix aby JS nepreklapel na UTC
+  return new Date(s.replace('Z',''));
 }
-function startOfDay(){const n=new Date();const l=localDate(n);return new Date(l.getFullYear(),l.getMonth(),l.getDate());}
-function startOfWeek(){const t=startOfDay();const dow=t.getDay();const d=dow===0?6:dow-1;t.setDate(t.getDate()-d);return t;}
-function startOfMonth(){const t=startOfDay();return new Date(t.getFullYear(),t.getMonth(),1);}
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+function isSameDay(raw){
+  return (raw.AuthorizationDateTimeGMT||'').slice(0,10)===todayStr();
+}
+function startOfDay(){const t=new Date();t.setHours(0,0,0,0);return t;}
+function startOfWeek(){
+  const t=startOfDay();
+  const dow=t.getDay();const d=dow===0?6:dow-1;
+  t.setDate(t.getDate()-d);return t;
+}
+function startOfMonth(){
+  const t=startOfDay();
+  return new Date(t.getFullYear(),t.getMonth(),1);
+}
 
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
@@ -233,7 +249,7 @@ function processData(sales,days){
   // Graf – filtrované období
   const byDay={};const byWD=Array(7).fill(0);let maxT=0;
   f.forEach(s=>{
-    const dLoc=localDate(gd(s)),a=ga(s),wd=dLoc.getDay();
+    const dLoc=gd(s),a=ga(s),wd=dLoc.getDay();
     const key=dLoc.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
     byDay[key]=(byDay[key]||0)+a;
     byWD[wd]+=a;
@@ -243,8 +259,8 @@ function processData(sales,days){
   // Dnes/týden/měsíc – vždy ze VŠECH dat
   let todR=0,todS=0,wkR=0,monthR=0,cashR=0,cardR=0;
   sales.forEach(s=>{
-    const dLoc=localDate(gd(s)),a=ga(s),m=pm(s);
-    if(dLoc>=tod){todR+=a;todS++;}
+    const dLoc=gd(s),a=ga(s),m=pm(s);
+    if(isSameDay(s)){todR+=a;todS++;}
     if(dLoc>=sow)wkR+=a;
     if(dLoc>=som)monthR+=a;
     if(m==='Hotovost')cashR+=a;else cardR+=a;
@@ -254,7 +270,7 @@ function processData(sales,days){
   const totalS=sales.length;
   const tr=f.reduce((s,t)=>s+ga(t),0),ts=f.length,av=ts?tr/ts:0;
   const bi=byWD.indexOf(Math.max(...byWD));
-  const lastTx=[...sales].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:localDate(gd(s)).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
+  const lastTx=[...sales].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:gd(s).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
   return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,monthR,maxT,cashR,cardR,totalR,totalS,lastTx};
 }
 
