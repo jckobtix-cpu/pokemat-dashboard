@@ -215,7 +215,9 @@ function logout(){sessionStorage.removeItem('auth');window.location.href='index.
 const SLOTS={};
 const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
-const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||0);
+function parseDate(s){return new Date((s||'').replace('Z',''));}
+function todayStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||'');
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||0);
 const gs=t=>String(t.Selection||t.SlotNumber||'?');
 
@@ -244,7 +246,7 @@ function buildSales(raw){
   const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
   return sales.map((s,i)=>({
     idx: i+1,
-    date: gd(s),
+    date: gd(s), dateStr: (s.AuthorizationDateTimeGMT||'').slice(0,10),
     slot: gs(s),
     amount: ga(s),
     method: s.PaymentMethod||'Karta',
