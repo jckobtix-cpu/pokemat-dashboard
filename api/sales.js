@@ -82,8 +82,22 @@ async function fetchFromSQS() {
         if (rhMatch) receiptHandles.push(rhMatch[1]);
         
         if (bodyMatch) {
-          const body = bodyMatch[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-          const msg = JSON.parse(body);
+          const body = bodyMatch[1]
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&#34;/g, '"')
+            .replace(/&#38;/g, '&')
+            .trim();
+          console.log('SQS raw body:', body.slice(0, 800));
+          let msg;
+          try {
+            msg = JSON.parse(body);
+          } catch(parseErr) {
+            console.error('JSON parse failed:', parseErr.message, 'Body start:', body.slice(0, 100));
+            continue;
+          }
           const data = msg.Data || msg;
 
           // Platební metoda
