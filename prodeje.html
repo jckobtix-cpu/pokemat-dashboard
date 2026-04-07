@@ -49,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1.5rem}
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;margin-bottom:1.5rem;max-width:600px}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1rem 1.25rem;position:relative;overflow:hidden}
 .sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
 .sc-blue::after{background:linear-gradient(90deg,var(--accent) 50%,transparent)}
@@ -109,7 +109,7 @@ td{padding:.7rem 1rem;vertical-align:middle}
 
 .empty-state{padding:3rem;text-align:center;color:var(--muted2);font-size:.85rem}
 
-@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+
 @media(max-width:900px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
 </style>
 </head>
@@ -156,8 +156,6 @@ td{padding:.7rem 1rem;vertical-align:middle}
     <div class="stats-row">
       <div class="sc sc-blue"><div class="sl">Celkem prodejů</div><div class="sv" id="sTotalCount">–</div><div class="ss">od začátku provozu</div></div>
       <div class="sc sc-green"><div class="sl">Celkové tržby</div><div class="sv" id="sTotalRev">–</div><div class="ss">od začátku provozu</div></div>
-      <div class="sc sc-warn"><div class="sl">Tento měsíc</div><div class="sv" id="sMonthCount">–</div><div class="ss" id="sMonthName">prodejů</div></div>
-      <div class="sc sc-purple"><div class="sl">Tržby tento měsíc</div><div class="sv" id="sMonthRev">–</div><div class="ss" id="sMonthRevSub">–</div></div>
     </div>
 
     <!-- FILTERS -->
@@ -276,17 +274,9 @@ function populateFilters(sales){
 }
 
 function renderStats(sales){
-  const now=new Date();
-  const thisMonth=sales.filter(s=>s.date.getMonth()===now.getMonth()&&s.date.getFullYear()===now.getFullYear());
   const totalRev=sales.reduce((s,t)=>s+t.amount,0);
-  const monthRev=thisMonth.reduce((s,t)=>s+t.amount,0);
-
   document.getElementById('sTotalCount').textContent=sales.length.toLocaleString('cs-CZ');
   document.getElementById('sTotalRev').textContent=fmt(totalRev);
-  document.getElementById('sMonthCount').textContent=thisMonth.length.toLocaleString('cs-CZ');
-  document.getElementById('sMonthName').textContent=`prodejů · ${MONTHS_CS[now.getMonth()]}`;
-  document.getElementById('sMonthRev').textContent=fmt(monthRev);
-  document.getElementById('sMonthRevSub').textContent=MONTHS_CS[now.getMonth()]+' '+now.getFullYear();
 }
 
 function applyFilters(){
