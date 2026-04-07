@@ -167,16 +167,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="sec-hdr"><span class="sec-title">Přehled</span><div class="sec-line"></div></div>
 
     <div class="stats-row">
-      <div class="sc sc-blue"><div class="st"><div class="sl">Tržby celkem</div><span class="badge bu" id="b1">–</span></div><div class="sv" id="v-rev">–</div><div class="ss" id="s-rev">načítám...</div></div>
-      <div class="sc sc-green"><div class="st"><div class="sl">Počet prodejů</div><span class="badge bn" id="b2">–</span></div><div class="sv" id="v-sales">–</div><div class="ss" id="s-sales">načítám...</div></div>
-      <div class="sc sc-warn"><div class="st"><div class="sl">Průměrná hodnota</div><span class="badge bn">/ nákup</span></div><div class="sv" id="v-avg">–</div><div class="ss">průměr na transakci</div></div>
-      <div class="sc sc-red"><div class="st"><div class="sl">Nejlepší den</div><span class="badge bs">⭐ Top</span></div><div class="sv" id="v-bestday">–</div><div class="ss" id="s-bestday">načítám...</div></div>
+      <div class="sc sc-blue"><div class="st"><div class="sl">Celkové tržby</div><span class="badge bu" id="b1">–</span></div><div class="sv" id="v-rev">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-cyan"><div class="st"><div class="sl">Tento měsíc</div><span class="badge bn">Měsíc</span></div><div class="sv" id="v-month">–</div><div class="ss" id="s-month">načítám...</div></div>
+      <div class="sc sc-lime"><div class="st"><div class="sl">Tento týden</div><span class="badge bn">Týden</span></div><div class="sv" id="v-week">–</div><div class="ss">od pondělí do dnes</div></div>
+      <div class="sc sc-green"><div class="st"><div class="sl">Dnešní tržby</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today">–</div><div class="ss" id="s-today">načítám...</div></div>
     </div>
     <div class="stats-row" style="margin-bottom:1.5rem">
       <div class="sc sc-purple"><div class="st"><div class="sl">Nejvyšší nákup</div><span class="badge bp">Max</span></div><div class="sv" id="v-max">–</div><div class="ss">jednorázová transakce</div></div>
-      <div class="sc sc-cyan"><div class="st"><div class="sl">Dnešní tržby</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today">–</div><div class="ss" id="s-today">načítám...</div></div>
-      <div class="sc sc-lime"><div class="st"><div class="sl">Tento týden</div><span class="badge bn">Týden</span></div><div class="sv" id="v-week">–</div><div class="ss">od pondělí do dnes</div></div>
       <div class="sc sc-pink"><div class="st"><div class="sl">Hotovost vs Karta</div><span class="badge bn">Split</span></div><div class="sv" id="v-split">–</div><div class="ss" id="s-split">načítám...</div></div>
+      <div class="sc sc-warn"><div class="st"><div class="sl">Průměrná hodnota</div><span class="badge bn">/ nákup</span></div><div class="sv" id="v-avg">–</div><div class="ss">průměr na transakci</div></div>
+      <div class="sc sc-red"><div class="st"><div class="sl">Celkem prodejů</div><span class="badge bu" id="b2">–</span></div><div class="sv" id="v-sales">–</div><div class="ss">od začátku provozu</div></div>
     </div>
 
     <!-- GRAF + TRANSAKCE -->
@@ -218,24 +218,33 @@ function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';retu
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
   const sow=new Date(now);sow.setDate(now.getDate()-now.getDay()+1);sow.setHours(0,0,0,0);
+  const som=new Date(now.getFullYear(),now.getMonth(),1);
   const tod=new Date();tod.setHours(0,0,0,0);
   const f=sales.filter(s=>gd(s)>=cut);
   const byDay={};const byWD=Array(7).fill(0);
-  let todR=0,todS=0,wkR=0,maxT=0,cashR=0,cardR=0;
+  let todR=0,todS=0,wkR=0,monthR=0,maxT=0;
   f.forEach(s=>{
-    const d=gd(s),a=ga(s),wd=d.getDay(),m=pm(s);
+    const d=gd(s),a=ga(s),wd=d.getDay();
     const key=d.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
     byDay[key]=(byDay[key]||0)+a;
     byWD[wd]+=a;
     if(d>=sow)wkR+=a;
+    if(d>=som)monthR+=a;
     if(d>=tod){todR+=a;todS++;}
     if(a>maxT)maxT=a;
+  });
+  // Cash/card ze VSECH dat
+  let cashR=0,cardR=0;
+  sales.forEach(s=>{
+    const a=ga(s),m=pm(s);
     if(m==='Hotovost')cashR+=a;else cardR+=a;
   });
+  const totalR=sales.reduce((s,t)=>s+ga(t),0);
+  const totalS=sales.length;
   const tr=f.reduce((s,t)=>s+ga(t),0),ts=f.length,av=ts?tr/ts:0;
   const bi=byWD.indexOf(Math.max(...byWD));
   const lastTx=[...f].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:gd(s).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
-  return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,maxT,cashR,cardR,lastTx};
+  return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,monthR,maxT,cashR,cardR,totalR,totalS,lastTx};
 }
 
 function generateMockData(){
@@ -264,20 +273,22 @@ const TT={backgroundColor:'#18181d',borderColor:'rgba(255,255,255,0.07)',borderW
 function renderAll(sales){
   const d=processData(sales,AD);
   // Stats
-  document.getElementById('v-rev').textContent=fmt(d.tr);
-  document.getElementById('b1').textContent=`${d.ts} prod.`;
-  document.getElementById('s-rev').innerHTML=`za posledních <strong>${AD} dní</strong>`;
-  document.getElementById('v-sales').textContent=d.ts;
-  document.getElementById('b2').textContent=`~${(d.ts/AD).toFixed(1)}/den`;
-  document.getElementById('s-sales').innerHTML=`průměrně <strong>${(d.ts/AD).toFixed(1)} prodejů/den</strong>`;
-  document.getElementById('v-avg').textContent=fmt(d.av);
-  document.getElementById('v-bestday').textContent=DC[d.bi];
-  document.getElementById('s-bestday').innerHTML=`průměrné tržby <strong>${fmt(d.bdr)}</strong>`;
-  document.getElementById('v-max').textContent=fmt(d.maxT);
+  // Celkové stats (ze všech dat)
+  document.getElementById('v-rev').textContent=fmt(d.totalR);
+  document.getElementById('b1').textContent=`${d.totalS} prod. celkem`;
+  document.getElementById('v-sales').textContent=d.totalS.toLocaleString('cs-CZ');
+  document.getElementById('b2').textContent=`od začátku`;
+  // Časové stats
+  document.getElementById('v-month').textContent=fmt(d.monthR);
+  document.getElementById('s-month').textContent=new Date().toLocaleDateString('cs-CZ',{month:'long',year:'numeric'});
+  document.getElementById('v-week').textContent=fmt(d.wkR);
   document.getElementById('v-today').textContent=fmt(d.todR);
   document.getElementById('s-today').innerHTML=`<strong>${d.todS} prodejů</strong> dnes`;
-  document.getElementById('v-week').textContent=fmt(d.wkR);
-  const cp=d.tr?Math.round(d.cashR/d.tr*100):0;
+  document.getElementById('v-max').textContent=fmt(d.maxT);
+  document.getElementById('v-avg').textContent=fmt(d.av);
+  // Cash vs karta ze VŠECH dat
+  const allRev=d.totalR||1;
+  const cp=Math.round(d.cashR/allRev*100);
   document.getElementById('v-split').textContent=`${cp}% / ${100-cp}%`;
   document.getElementById('s-split').innerHTML=`hotovost <strong>${fmt(d.cashR)}</strong> · karta <strong>${fmt(d.cardR)}</strong>`;
   // Revenue chart
