@@ -8,7 +8,9 @@ async function redisGet(key) {
   try {
     const res = await fetch(`${REDIS_URL}/get/${key}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
     const data = await res.json();
-    return data.result ? JSON.parse(data.result) : null;
+    if (!data.result) return null;
+    const parsed = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    return Array.isArray(parsed) ? parsed : null;
   } catch(e) { return null; }
 }
 
