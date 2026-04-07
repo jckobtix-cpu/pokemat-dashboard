@@ -279,7 +279,10 @@ let AD=30,CH={};
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
 const fmts=v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v);
 const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
-const gd=t=>new Date(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||0);
+function parseDate(s){return new Date((s||'').replace('Z',''));}
+function todayStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function isSameDay(raw){return (raw.AuthorizationDateTimeGMT||'').slice(0,10)===todayStr();}
+const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||'');
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('cash'))return'Hotovost';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
