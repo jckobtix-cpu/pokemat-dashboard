@@ -323,10 +323,8 @@ function makeLegend(el,labels,colors,values,total){
     </div>`).join('');
 }
 
-function renderCharts(){
-  const raw=sessionStorage.getItem('salesData');
-  if(!raw){window.location.href='dashboard.html';return;}
-  const sales=JSON.parse(raw);
+function renderCharts(sales){
+  if(!sales){return;}
   const d=processData(sales,AD);
 
   // Donut 1 – tržby
@@ -389,14 +387,38 @@ function renderCharts(){
   const pColors={'Visa':'#4f8ef7','Mastercard':'#f59e0b','Hotovost':'#22c55e','Apple Pay':'#e8e8ec','Google Pay':'#4285f4','Karta':'#a78bfa'};
   document.getElementById('payList').innerHTML=d.payM.map(p=>{const pct=Math.round(p.r/d.totPay*100);return`<div class="pay-row"><div class="pay-ico">${icons[p.n]||'💳'}</div><div class="pay-name">${p.n}</div><div class="pay-bw"><div class="pay-b" style="width:${pct}%;background:${pColors[p.n]||'#4f8ef7'}"></div></div><div class="pay-pct">${pct}%</div></div>`;}).join('');
 
-  document.getElementById('apiDot').classList[sessionStorage.getItem('salesData')?'remove':'add']('red');
+  document.getElementById('apiDot').classList.remove('red');
   document.getElementById('apiStatus').textContent='Data načtena';
 }
 
-function setPeriod(btn,days){document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');AD=days;renderCharts();}
+let _grafySales=null;
 
-document.getElementById('loading').style.display='flex';
-setTimeout(()=>{renderCharts();document.getElementById('loading').style.display='none';},300);
+function setPeriod(btn,days){
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');AD=days;
+  renderCharts(_grafySales);
+}
+
+async function loadGrafyData(){
+  document.getElementById('loading').style.display='flex';
+  try{
+    const res=await fetch('/api/sales');
+    if(!res.ok)throw new Error(res.status);
+    const raw=await res.json();
+    _grafySales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.data||[]);
+    renderCharts(_grafySales);
+    document.getElementById('apiDot').classList.remove('red');
+    document.getElementById('apiStatus').textContent='Data načtena';
+  }catch(e){
+    console.error(e);
+    document.getElementById('apiDot').classList.add('red');
+    document.getElementById('apiStatus').textContent='Chyba';
+  }finally{
+    document.getElementById('loading').style.display='none';
+  }
+}
+
+loadGrafyData();
 </script>
 </body>
 </html>
