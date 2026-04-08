@@ -72,8 +72,14 @@ async function fetchFromSQS() {
   try {
     const response = await sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, 'Action=ReceiveMessage&MaxNumberOfMessages=10&WaitTimeSeconds=0');
     if (!response.ok) return [];
-    const xml = await response.text();
-    console.log('SQS XML:', xml.slice(0, 1000));
+    const rawXml = await response.text();
+    // Odstran vsechny HTML entity pred parsovanim XML
+    const xml = rawXml
+      .replace(/&#xD;/gi, '')
+      .replace(/&#xA;/gi, '')
+      .replace(/&#13;/gi, '')
+      .replace(/&#10;/gi, '');
+    console.log('SQS XML:', xml.slice(0, 500));
 
     const messages = [];
     const receiptHandles = [];
@@ -105,16 +111,25 @@ async function fetchFromSQS() {
           catch(e) { console.error('JSON parse error:', e.message, body.slice(0, 100)); continue; }
 
           const data = msg.Data || msg;
+          
+          // Platební metoda podle PaymentMethodId
+          // 1=Hotovost, 2=Karta, 3=Karta(credit), 4=Apple Pay, 5=Google Pay
+          const pmId = Number(msg.PaymentMethodId || data['Payment Method ID (1)'] || 0);
           const pmDesc = (data['Payment Method Description'] || data['PaymentMethod'] || '').toLowerCase();
           let payMethod = 'Karta';
-          if (pmDesc.includes('cash') || pmDesc.includes('hotovost')) payMethod = 'Hotovost';
+          if (pmId === 1 || pmDesc.includes('cash') || pmDesc.includes('hotovost')) payMethod = 'Hotovost';
+          else if (pmId === 4 || pmDesc.includes('apple')) payMethod = 'Apple Pay';
+          else if (pmId === 5 || pmDesc.includes('google')) payMethod = 'Google Pay';
           else if (pmDesc.includes('mastercard')) payMethod = 'Mastercard';
           else if (pmDesc.includes('visa')) payMethod = 'Visa';
-          else if (pmDesc.includes('apple')) payMethod = 'Apple Pay';
-          else if (pmDesc.includes('google')) payMethod = 'Google Pay';
+          else payMethod = 'Karta';
+
+          // Datum - pouzij MachineTime primo z msg
+          const dateRaw = msg.MachineTime || data['Machine AuTime'] || data['Authorization Time'] || new Date().toISOString();
+          const dateClean = dateRaw.replace('Z','').slice(0,19);
 
           const sale = {
-            AuthorizationDateTimeGMT: (data['Machine AuTime'] || data['Authorization Time'] || msg.MachineTime || new Date().toISOString()).replace('Z','').slice(0,19),
+            AuthorizationDateTimeGMT: dateClean,
             SettlementValue: parseFloat(data['SeValue'] || data['SettlementValue'] || msg.AuthorizationValue || 0),
             Selection: String(data['Product Code in Map'] || data['OP Button Code'] || data['Selection'] || '?'),
             PaymentMethod: payMethod,
