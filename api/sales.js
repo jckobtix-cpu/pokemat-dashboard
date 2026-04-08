@@ -88,6 +88,10 @@ async function fetchFromSQS() {
 
         if (bodyMatch) {
           const body = bodyMatch[1]
+            .replace(/&#xD;/gi, '')
+            .replace(/&#xA;/gi, '')
+            .replace(/&#13;/gi, '')
+            .replace(/&#10;/gi, '')
             .replace(/&quot;/g, '"')
             .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
