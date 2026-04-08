@@ -111,7 +111,7 @@ async function fetchFromSQS() {
             .replace(/&gt;/g, '>')
             .replace(/&#34;/g, '"')
             .trim();
-          console.log('SQS body:', body.slice(0, 500));
+          console.log('SQS body full:', body);
 
           let msg;
           try { msg = JSON.parse(body); }
