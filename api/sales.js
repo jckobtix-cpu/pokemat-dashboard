@@ -10,9 +10,11 @@ async function redisGet(key) {
       headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
     });
     const data = await res.json();
+    console.log('redisGet raw:', JSON.stringify(data).slice(0, 200));
     if (!data.result) return null;
-    const str = typeof data.result === 'string' ? data.result : JSON.stringify(data.result);
-    const parsed = JSON.parse(str);
+    let parsed = data.result;
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
     return Array.isArray(parsed) ? parsed : null;
   } catch(e) {
     console.error('redisGet error:', e.message);
@@ -24,11 +26,16 @@ async function redisSet(key, value) {
   if (!REDIS_URL || !REDIS_TOKEN) return;
   try {
     const str = JSON.stringify(value);
-    await fetch(`${REDIS_URL}/set/${key}`, {
+    const res = await fetch(`${REDIS_URL}/set/${key}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify([key, str])
+      headers: { 
+        Authorization: `Bearer ${REDIS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(str)
     });
+    const data = await res.json();
+    console.log('redisSet result:', JSON.stringify(data));
   } catch(e) {
     console.error('redisSet error:', e.message);
   }
@@ -112,16 +119,16 @@ async function fetchFromSQS() {
 
           const data = msg.Data || msg;
           
-          // Platební metoda podle PaymentMethodId
-          // 1=Hotovost, 2=Karta, 3=Karta(credit), 4=Apple Pay, 5=Google Pay
-          const pmId = Number(msg.PaymentMethodId || data['Payment Method ID (1)'] || 0);
-          const pmDesc = (data['Payment Method Description'] || data['PaymentMethod'] || '').toLowerCase();
+          // Platební metoda - pouzij Brand a Card String
+          const brand = (data['Brand'] || '').toUpperCase();
+          const cardStr = (data['Card String'] || '');
+          const pmDesc = (data['Payment Method Description'] || '').toLowerCase();
           let payMethod = 'Karta';
-          if (pmId === 1 || pmDesc.includes('cash') || pmDesc.includes('hotovost')) payMethod = 'Hotovost';
-          else if (pmId === 4 || pmDesc.includes('apple')) payMethod = 'Apple Pay';
-          else if (pmId === 5 || pmDesc.includes('google')) payMethod = 'Google Pay';
-          else if (pmDesc.includes('mastercard')) payMethod = 'Mastercard';
-          else if (pmDesc.includes('visa')) payMethod = 'Visa';
+          if (brand === 'VISA' || pmDesc.includes('visa')) payMethod = 'Visa';
+          else if (brand === 'MASTERCARD' || pmDesc.includes('mastercard')) payMethod = 'Mastercard';
+          else if (pmDesc.includes('apple')) payMethod = 'Apple Pay';
+          else if (pmDesc.includes('google')) payMethod = 'Google Pay';
+          else if (!cardStr && !brand) payMethod = 'Hotovost';
           else payMethod = 'Karta';
 
           // Datum - pouzij MachineTime primo z msg
