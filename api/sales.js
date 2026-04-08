@@ -135,12 +135,24 @@ async function fetchFromSQS() {
           const dateRaw = msg.MachineTime || data['Machine AuTime'] || data['Authorization Time'] || new Date().toISOString();
           const dateClean = dateRaw.replace('Z','').slice(0,19);
 
+          // Slot je v Products poli
+          let slotNum = '?';
+          let productName = null;
+          if (data['Products'] && data['Products'].length > 0) {
+            const p = data['Products'][0];
+            slotNum = String(p['Product Code in Map'] || '?');
+            productName = p['Product Name'] !== 'Unknown' ? p['Product Name'] : null;
+          } else {
+            slotNum = String(data['Product Code in Map'] || data['OP Button Code'] || '?');
+            productName = data['Product Name'] || null;
+          }
+
           const sale = {
             AuthorizationDateTimeGMT: dateClean,
             SettlementValue: parseFloat(data['SeValue'] || data['SettlementValue'] || msg.AuthorizationValue || 0),
-            Selection: String(data['Product Code in Map'] || data['OP Button Code'] || data['Selection'] || '?'),
+            Selection: slotNum,
             PaymentMethod: payMethod,
-            ProductName: data['Product Name'] || null,
+            ProductName: productName,
           };
 
           if (sale.SettlementValue > 0) messages.push(sale);
