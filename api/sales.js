@@ -6,23 +6,32 @@ const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_R
 async function redisGet(key) {
   if (!REDIS_URL || !REDIS_TOKEN) return null;
   try {
-    const res = await fetch(`${REDIS_URL}/get/${key}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
+    const res = await fetch(`${REDIS_URL}/get/${key}`, {
+      headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
+    });
     const data = await res.json();
     if (!data.result) return null;
-    const parsed = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    const str = typeof data.result === 'string' ? data.result : JSON.stringify(data.result);
+    const parsed = JSON.parse(str);
     return Array.isArray(parsed) ? parsed : null;
-  } catch(e) { return null; }
+  } catch(e) {
+    console.error('redisGet error:', e.message);
+    return null;
+  }
 }
 
 async function redisSet(key, value) {
   if (!REDIS_URL || !REDIS_TOKEN) return;
   try {
+    const str = JSON.stringify(value);
     await fetch(`${REDIS_URL}/set/${key}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value: JSON.stringify(value) })
+      body: JSON.stringify([key, str])
     });
-  } catch(e) {}
+  } catch(e) {
+    console.error('redisSet error:', e.message);
+  }
 }
 
 async function sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, queryString) {
@@ -61,26 +70,22 @@ async function fetchFromSQS() {
   if (!ACCESS_KEY || !SECRET_KEY || !QUEUE_URL) return [];
 
   try {
-    // 1. Přijmi zprávy
     const response = await sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, 'Action=ReceiveMessage&MaxNumberOfMessages=10&WaitTimeSeconds=0');
     if (!response.ok) return [];
     const xml = await response.text();
+    console.log('SQS XML:', xml.slice(0, 1000));
 
     const messages = [];
     const receiptHandles = [];
-
-    // Parsuj zprávy a receipt handles
     const msgMatches = [...xml.matchAll(/<Message>([\s\S]*?)<\/Message>/g)];
-    
+
     for (const msgMatch of msgMatches) {
       const msgXml = msgMatch[1];
       try {
-        // Získej receipt handle pro smazání
         const rhMatch = msgXml.match(/<ReceiptHandle>([\s\S]*?)<\/ReceiptHandle>/);
         const bodyMatch = msgXml.match(/<Body>([\s\S]*?)<\/Body>/);
-        
         if (rhMatch) receiptHandles.push(rhMatch[1]);
-        
+
         if (bodyMatch) {
           const body = bodyMatch[1]
             .replace(/&quot;/g, '"')
@@ -88,19 +93,14 @@ async function fetchFromSQS() {
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&#34;/g, '"')
-            .replace(/&#38;/g, '&')
             .trim();
-          console.log('SQS raw body:', body.slice(0, 800));
-          let msg;
-          try {
-            msg = JSON.parse(body);
-          } catch(parseErr) {
-            console.error('JSON parse failed:', parseErr.message, 'Body start:', body.slice(0, 100));
-            continue;
-          }
-          const data = msg.Data || msg;
+          console.log('SQS body:', body.slice(0, 500));
 
-          // Platební metoda
+          let msg;
+          try { msg = JSON.parse(body); }
+          catch(e) { console.error('JSON parse error:', e.message, body.slice(0, 100)); continue; }
+
+          const data = msg.Data || msg;
           const pmDesc = (data['Payment Method Description'] || data['PaymentMethod'] || '').toLowerCase();
           let payMethod = 'Karta';
           if (pmDesc.includes('cash') || pmDesc.includes('hotovost')) payMethod = 'Hotovost';
@@ -119,20 +119,19 @@ async function fetchFromSQS() {
 
           if (sale.SettlementValue > 0) messages.push(sale);
         }
-      } catch(e) { console.error('Parse error:', e.message); }
+      } catch(e) { console.error('Msg parse error:', e.message); }
     }
 
-    // 2. Smaž zpracované zprávy ze SQS
+    // Smaž zprávy ze SQS
     for (const rh of receiptHandles) {
       try {
-        const encoded = encodeURIComponent(rh);
-        await sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, `Action=DeleteMessage&ReceiptHandle=${encoded}`);
+        await sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, `Action=DeleteMessage&ReceiptHandle=${encodeURIComponent(rh)}`);
       } catch(e) {}
     }
 
     return messages;
   } catch(e) {
-    console.error('SQS error:', e.message);
+    console.error('SQS fetch error:', e.message);
     return [];
   }
 }
@@ -145,26 +144,22 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    // 1. Načti nové prodeje ze SQS a hned je smaž z fronty
     const sqsSales = await fetchFromSQS();
-
-    // 2. Načti uložené prodeje z Redis
     let savedSales = await redisGet('sales') || [];
+    console.log('savedSales count:', savedSales.length);
 
-    // 3. Přidej nové prodeje (bez duplikátů)
     if (sqsSales.length > 0) {
       const existingKeys = new Set(savedSales.map(s => s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
       const newSales = sqsSales.filter(s => !existingKeys.has(s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
+      console.log('new sales:', newSales.length);
 
       if (newSales.length > 0) {
         savedSales = [...newSales, ...savedSales];
         await redisSet('sales', savedSales);
 
-        // Discord notifikace
         const DISCORD = process.env.DISCORD_WEBHOOK;
         if (DISCORD) {
           for (const sale of newSales) {
-            const pm = sale.PaymentMethod;
             const product = sale.ProductName || `Slot ${sale.Selection}`;
             const amount = Math.round(sale.SettlementValue);
             const time = sale.AuthorizationDateTimeGMT.replace('T', ' ').slice(0, 16);
@@ -178,7 +173,7 @@ export default async function handler(req, res) {
                   fields: [
                     { name: '📦 Produkt', value: product, inline: true },
                     { name: '💰 Částka', value: `${amount} Kč`, inline: true },
-                    { name: '💳 Platba', value: pm, inline: true },
+                    { name: '💳 Platba', value: sale.PaymentMethod, inline: true },
                     { name: '🕐 Čas', value: time, inline: true },
                   ],
                   footer: { text: 'Pokémon Automat · Nayax' }
@@ -190,11 +185,9 @@ export default async function handler(req, res) {
       }
     }
 
-    // 4. Spoj: Redis (nové) + history.json (historické)
     const historyKeys = new Set(historyData.map(s => s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
     const onlyNew = savedSales.filter(s => !historyKeys.has(s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
     const merged = [...onlyNew, ...historyData];
-
     return res.status(200).json(merged);
 
   } catch(e) {
