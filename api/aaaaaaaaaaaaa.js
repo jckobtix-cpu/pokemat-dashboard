@@ -37,6 +37,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        content: '@everyone',
         embeds: [{
           title: `📊 Denní souhrn – ${today}`,
           description: 'Dnes nebyl žádný prodej.',
@@ -68,6 +69,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      content: '@everyone',
       embeds: [{
         title: `📊 Denní souhrn – ${today}`,
         color: 0x4f8ef7,
