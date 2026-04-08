@@ -28,8 +28,8 @@ export default async function handler(req, res) {
   const onlyNew = savedSales.filter(s => !historyKeys.has(s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
   const allSales = [...onlyNew, ...historyData];
 
-  // Dnešní prodeje
-  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Prague' });
+  // Dnešní prodeje - lze zadat datum jako ?date=2026-04-08
+  const today = req.query.date || new Date(Date.now() - 86400000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Prague' });
   const todaySales = allSales.filter(s => (s.AuthorizationDateTimeGMT || '').slice(0, 10) === today);
 
   if (todaySales.length === 0) {
