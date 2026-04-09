@@ -124,6 +124,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .empty{color:var(--muted2);font-size:.78rem;padding:.75rem 0}
 
 @media(max-width:1200px){.g2,.g3{grid-template-columns:1fr 1fr}}
+
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;justify-content:space-around}
+.mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.6rem;font-weight:500;color:var(--muted2);text-decoration:none;padding:4px 12px;border-radius:8px;transition:color .15s}
+.mobile-nav a.active{color:var(--accent)}
+.mobile-nav a span:first-child{font-size:1.2rem}
+@media(max-width:900px){.mobile-nav{display:flex}.content{padding:1rem 1rem 80px}}
 @media(max-width:900px){.sidebar{display:none}.g2,.g3{grid-template-columns:1fr}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
 </style>
 </head>
