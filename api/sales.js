@@ -227,6 +227,14 @@ export default async function handler(req, res) {
     const historyKeys = new Set(historyData.map(s => s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
     const onlyNew = savedSales.filter(s => !historyKeys.has(s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
     const merged = [...onlyNew, ...historyData];
+
+    // Pokud je to cron job (ne browser), vrať jen summary
+    const userAgent = req.headers['user-agent'] || '';
+    const isCron = !userAgent.includes('Mozilla');
+    if (isCron) {
+      return res.status(200).json({ ok: true, total: merged.length, new: onlyNew.length });
+    }
+
     return res.status(200).json(merged);
 
   } catch(e) {
