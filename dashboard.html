@@ -262,14 +262,21 @@ function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
   const f=sales.filter(s=>gd(s)>=cut);
 
-  // Graf – filtrované období
-  const byDay={};const byWD=Array(7).fill(0);let maxT=0;
+  // Graf – filtrované období, klíč = YYYY-MM-DD pro správné řazení
+  const byDayRaw={};const byWD=Array(7).fill(0);let maxT=0;
   f.forEach(s=>{
     const dLoc=gd(s),a=ga(s),wd=dLoc.getDay();
-    const key=dLoc.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
-    byDay[key]=(byDay[key]||0)+a;
+    const isoKey=dateStr(s); // YYYY-MM-DD
+    byDayRaw[isoKey]=(byDayRaw[isoKey]||0)+a;
     byWD[wd]+=a;
     if(a>maxT)maxT=a;
+  });
+  // Seřaď dny a převeď na DD.MM pro zobrazení
+  const byDay={};
+  Object.keys(byDayRaw).sort().forEach(k=>{
+    const parts=k.split('-');
+    const label=parts[2]+'.'+parts[1];
+    byDay[label]=byDayRaw[k];
   });
 
   // Dnes/týden/měsíc – string porovnání, vždy ze VŠECH dat
