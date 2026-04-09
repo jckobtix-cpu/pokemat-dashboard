@@ -228,9 +228,9 @@ export default async function handler(req, res) {
     const onlyNew = savedSales.filter(s => !historyKeys.has(s.AuthorizationDateTimeGMT + '_' + s.SettlementValue));
     const merged = [...onlyNew, ...historyData];
 
-    // Pokud je to cron job (ne browser), vrať jen summary
+    // Pokud je to cron job, vrať jen summary (detekce podle URL parametru nebo user-agent)
     const userAgent = req.headers['user-agent'] || '';
-    const isCron = !userAgent.includes('Mozilla');
+    const isCron = req.query.cron === '1' || !userAgent.includes('Mozilla');
     if (isCron) {
       return res.status(200).json({ ok: true, total: merged.length, new: onlyNew.length });
     }
