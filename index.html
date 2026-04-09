@@ -107,7 +107,9 @@ body {
 // Přihlašovací údaje – změňte si dle libosti
 const CREDENTIALS = { username: 'admin', password: 'pokemat2026' };
 
-if (sessionStorage.getItem('auth') === 'ok') {
+// Na mobilu (PWA) přeskočit přihlášení
+const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+if (isPWA || sessionStorage.getItem('auth') === 'ok') {
   window.location.href = 'dashboard.html';
 }
 
