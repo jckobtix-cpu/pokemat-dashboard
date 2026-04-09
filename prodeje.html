@@ -216,7 +216,8 @@ td{padding:.7rem 1rem;vertical-align:middle}
 </div>
 
 <script>
-if(sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const SLOTS={};
