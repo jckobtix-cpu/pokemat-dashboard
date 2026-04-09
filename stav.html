@@ -292,7 +292,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div>
 
 <script>
-if(sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const SLOTS={};
