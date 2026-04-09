@@ -2,6 +2,13 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pokemat">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pokémon Automat – Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -215,35 +222,31 @@ const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';return'Karta';}
 function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
 
-// Data jsou ulozena v ceskem case (ne UTC) i kdyz maji Z suffix
-// Bereme cas tak jak je - bez konverze timezone
-function parseDate(s){
-  // Odstranime Z suffix aby JS nepreklapel na UTC
-  return new Date(s.replace('Z',''));
-}
+// Data jsou v českém čase - porovnáváme datumy jako stringy
+function parseDate(s){return new Date((s||'').replace('Z',''));}
+
+// Dnešní datum jako string YYYY-MM-DD
 function todayStr(){
   const n=new Date();
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 }
-function isSameDay(raw){
-  return (raw.AuthorizationDateTimeGMT||'').slice(0,10)===todayStr();
+// Datum záznamu jako string YYYY-MM-DD
+function dateStr(s){return (s.AuthorizationDateTimeGMT||'').slice(0,10);}
+// Začátek týdne jako string (pondělí)
+function weekStartStr(){
+  const n=new Date();
+  const dow=n.getDay()===0?6:n.getDay()-1;
+  const t=new Date(n);t.setDate(t.getDate()-dow);
+  return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
 }
-function startOfDay(){const t=new Date();t.setHours(0,0,0,0);return t;}
-function startOfWeek(){
-  const t=startOfDay();
-  const dow=t.getDay();const d=dow===0?6:dow-1;
-  t.setDate(t.getDate()-d);return t;
-}
-function startOfMonth(){
-  const t=startOfDay();
-  return new Date(t.getFullYear(),t.getMonth(),1);
+// Začátek měsíce jako string
+function monthStartStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-01';
 }
 
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
-  const sow=startOfWeek();
-  const som=startOfMonth();
-  const tod=startOfDay();
   const f=sales.filter(s=>gd(s)>=cut);
 
   // Graf – filtrované období
@@ -256,13 +259,14 @@ function processData(sales,days){
     if(a>maxT)maxT=a;
   });
 
-  // Dnes/týden/měsíc – vždy ze VŠECH dat
+  // Dnes/týden/měsíc – string porovnání, vždy ze VŠECH dat
+  const tStr=todayStr(),wStr=weekStartStr(),mStr=monthStartStr();
   let todR=0,todS=0,wkR=0,monthR=0,cashR=0,cardR=0;
   sales.forEach(s=>{
-    const dLoc=gd(s),a=ga(s),m=pm(s);
-    if(isSameDay(s)){todR+=a;todS++;}
-    if(dLoc>=sow)wkR+=a;
-    if(dLoc>=som)monthR+=a;
+    const ds=dateStr(s),a=ga(s),m=pm(s);
+    if(ds===tStr){todR+=a;todS++;}
+    if(ds>=wStr)wkR+=a;
+    if(ds>=mStr)monthR+=a;
     if(m==='Hotovost')cashR+=a;else cardR+=a;
   });
 
@@ -357,6 +361,11 @@ async function loadData(){
 function setPeriod(btn,days){document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');AD=days;loadData();}
 setInterval(loadData,5*60*1000);
 loadData();
+</script>
+<script>
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>
