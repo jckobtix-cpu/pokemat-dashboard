@@ -342,8 +342,7 @@ function renderAll(sales){
   document.getElementById('v-week').textContent=fmt(d.wkR);
   document.getElementById('v-today').textContent=fmt(d.todR);
   document.getElementById('s-today').innerHTML=`<strong>${d.todS} prodejů</strong> dnes`;
-  document.getElementById('v-max').textContent=fmt(d.maxT);
-  document.getElementById('v-avg').textContent=fmt(d.av);
+
   // Cash vs karta ze VŠECH dat
   const allRev=d.totalR||1;
   const cp=Math.round(d.cashR/allRev*100);
