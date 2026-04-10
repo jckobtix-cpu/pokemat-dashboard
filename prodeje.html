@@ -232,7 +232,17 @@ const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navi
 if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
-const SLOTS={};
+const SLOTS={
+  '1':'Black Bolt Booster','2':'Clay Burst Booster','3':'Mega Dream EX Booster',
+  '4':'Ancient Roar Booster','5':'Mega Symphonia Booster','6':'Scarlet & Violet Booster',
+  '7':'Twilight Masquerade Booster','8':'Surging Sparks Booster','9':'Destined Rivals Booster',
+  '10':'Ascended Heroes Booster','11':'Temporal Forces Booster','12':'Journey Together Booster',
+  '13':'Single karta','14':'Hard Sleeves','15':'Sleeves','16':'Blister 2pack',
+  '17':'Blister 3pack','18':'Shrouded Fable Tin','19':'Battle Styles Booster',
+  '20':'Terestal Festival Booster (JP)','21':'Astral Radiance Booster',
+  '22':'Obsidian Flames Booster','23':'Vivid Voltage Booster',
+  '24':'Team of Glory Booster (JP)','25':'Unova Black Tin','28':'Mega Heroes Tin'
+};
 const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
 function parseDate(s){return new Date((s||'').replace('Z',''));}
