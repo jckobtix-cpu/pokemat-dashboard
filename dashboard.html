@@ -157,7 +157,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div class="nav-sec">
     <div class="nav-lbl">Automat</div>
     <a href="stav.html" class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</a>
-    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
   </div>
   <div class="sidebar-foot">
     <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">Připojuji...</span></div>
@@ -192,9 +191,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="sc sc-green"><div class="st"><div class="sl">Dnešní tržby</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today">–</div><div class="ss" id="s-today">načítám...</div></div>
     </div>
     <div class="stats-row" style="margin-bottom:1.5rem">
-      <div class="sc sc-purple"><div class="st"><div class="sl">Nejvyšší nákup</div><span class="badge bp">Max</span></div><div class="sv" id="v-max">–</div><div class="ss">jednorázová transakce</div></div>
+      <div class="sc sc-green"><div class="st"><div class="sl">Celkový profit</div><span class="badge bn">Profit</span></div><div class="sv" id="v-total-profit">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-cyan"><div class="st"><div class="sl">Profit dnes</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today-profit">–</div><div class="ss" id="s-today-profit">čistý zisk dnes</div></div>
       <div class="sc sc-pink"><div class="st"><div class="sl">Hotovost vs Karta</div><span class="badge bn">Split</span></div><div class="sv" id="v-split">–</div><div class="ss" id="s-split">načítám...</div></div>
-      <div class="sc sc-warn"><div class="st"><div class="sl">Průměrná hodnota</div><span class="badge bn">/ nákup</span></div><div class="sv" id="v-avg">–</div><div class="ss">průměr na transakci</div></div>
       <div class="sc sc-red"><div class="st"><div class="sl">Celkem prodejů</div><span class="badge bu" id="b2">–</span></div><div class="sv" id="v-sales">–</div><div class="ss">od začátku provozu</div></div>
     </div>
 
@@ -222,6 +221,7 @@ if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.h
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const SLOTS={};
+const PRODUCTS_MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':18,'25':67,'28':83};
 const DC=['Ne','Po','Út','St','Čt','Pá','So'];
 const GOAL=1000;
 let AD=30,cRev;
@@ -329,6 +329,13 @@ function renderAll(sales){
   document.getElementById('b1').textContent=`${d.totalS} prod. celkem`;
   document.getElementById('v-sales').textContent=d.totalS.toLocaleString('cs-CZ');
   document.getElementById('b2').textContent=`od začátku`;
+  // Profit
+  const tStr2=todayStr();
+  const totalProfit=sales.reduce((s,t)=>s+(PRODUCTS_MARGIN[String(gs(t))]||0),0);
+  const todayProfit=sales.filter(t=>(t.AuthorizationDateTimeGMT||'').slice(0,10)===tStr2).reduce((s,t)=>s+(PRODUCTS_MARGIN[String(gs(t))]||0),0);
+  document.getElementById('v-total-profit').textContent=fmt(totalProfit);
+  document.getElementById('v-today-profit').textContent=fmt(todayProfit);
+  document.getElementById('s-today-profit').textContent=`${sales.filter(t=>(t.AuthorizationDateTimeGMT||'').slice(0,10)===tStr2).length} prodejů dnes`;
   // Časové stats
   document.getElementById('v-month').textContent=fmt(d.monthR);
   document.getElementById('s-month').textContent=new Date().toLocaleDateString('cs-CZ',{month:'long',year:'numeric'});
