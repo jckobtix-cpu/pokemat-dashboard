@@ -115,6 +115,8 @@ td{padding:.7rem 1rem;vertical-align:middle}
 .pg-btn:disabled{opacity:.3;cursor:default}
 
 .empty-state{padding:3rem;text-align:center;color:var(--muted2);font-size:.85rem}
+.btn-export{display:flex;align-items:center;gap:6px;padding:9px 16px;background:var(--accent2);border:none;border-radius:10px;color:#fff;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.btn-export:hover{opacity:.85}
 
 
 
@@ -156,7 +158,6 @@ td{padding:.7rem 1rem;vertical-align:middle}
   <div class="nav-sec">
     <div class="nav-lbl">Automat</div>
     <a href="stav.html" class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</a>
-    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
   </div>
   <div class="sidebar-foot">
     <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">–</span></div>
@@ -199,6 +200,7 @@ td{padding:.7rem 1rem;vertical-align:middle}
         <option value="Google Pay">Google Pay</option>
       </select>
       <div class="filter-info" id="filterInfo">–</div>
+      <button class="btn-export" onclick="exportCSV()">⬇️ Export CSV</button>
     </div>
 
     <!-- TABLE -->
@@ -408,6 +410,45 @@ function goPage(p){
   page=p;
   render();
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const SLOTS={'1':'Black Bolt Booster','2':'Clay Burst Booster','3':'Mega Dream EX Booster','4':'Ancient Roar Booster','5':'Mega Symphonia Booster','6':'Scarlet & Violet Booster','7':'Twilight Masquerade Booster','8':'Surging Sparks Booster','9':'Destined Rivals Booster','10':'Ascended Heroes Booster','11':'Temporal Forces Booster','12':'Journey Together Booster','13':'Single karta','14':'Hard Sleeves','15':'Sleeves','16':'Blister 2pack','17':'Blister 3pack','18':'Shrouded Fable Tin','19':'Battle Styles Booster','20':'Terestal Festival Booster (JP)','21':'Astral Radiance Booster','22':'Obsidian Flames Booster','23':'Vivid Voltage Booster','24':'Team of Glory Booster (JP)','25':'Unova Black Tin','28':'Mega Heroes Tin'};
+const MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':18,'25':67,'28':83};
+
+function exportCSV(){
+  if(!filtered.length){alert('Žádné prodeje k exportu');return;}
+  
+  const monthFilter = document.getElementById('filterMonth').value;
+  const filename = monthFilter 
+    ? `prodeje_${monthFilter}.csv`
+    : `prodeje_vsechny.csv`;
+
+  const rows = [
+    ['#','Datum','Čas','Produkt','Slot','Částka (Kč)','Platba','Marže (Kč)']
+  ];
+
+  filtered.forEach((s,i) => {
+    const dateStr = s.date.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const timeStr = s.date.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const productName = SLOTS[s.slot] || `Slot ${s.slot}`;
+    const margin = MARGIN[s.slot] || 0;
+    rows.push([i+1, dateStr, timeStr, productName, `Slot ${s.slot}`, s.amount, s.method, margin]);
+  });
+
+  // Součet na konec
+  const totalAmount = filtered.reduce((sum,s)=>sum+s.amount,0);
+  const totalMargin = filtered.reduce((sum,s)=>sum+(MARGIN[s.slot]||0),0);
+  rows.push([]);
+  rows.push(['','','','CELKEM','',Math.round(totalAmount),'',totalMargin]);
+
+  const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 async function loadData(){
