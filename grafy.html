@@ -227,7 +227,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <div style="position:relative;height:200px"><canvas id="cCompare"></canvas></div>
       </div>
       <div class="card mb">
-        <div class="ch"><div><div class="ct">Denní cíl</div><div class="cs">Pokrok dnešního dne</div></div></div>
+        <div class="ch"><div><div class="ct">Denní cíl profitu</div><div class="cs">Cíl: 450 Kč čistého profitu</div></div></div>
         <div class="goal-wrap">
           <div class="goal-ring">
             <svg width="110" height="110" viewBox="0 0 110 110"><circle class="grb" cx="55" cy="55" r="44"/><circle class="grf" id="gRing" cx="55" cy="55" r="44" stroke-dasharray="276.5" stroke-dashoffset="276.5"/></svg>
@@ -235,7 +235,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
           </div>
           <div class="goal-info">
             <div class="gi-row"><span>Dnes</span><strong id="gToday">–</strong></div>
-            <div class="gi-row"><span>Cíl</span><strong>1 000 Kč</strong></div>
+            <div class="gi-row"><span>Cíl</span><strong>450 Kč</strong></div>
             <div class="gi-row"><span>Zbývá</span><strong id="gLeft">–</strong></div>
             <div class="gi-row"><span>Prodejů dnes</span><strong id="gSales">–</strong></div>
           </div>
@@ -303,7 +303,7 @@ const SLOTS={
 const COLORS=['#4f8ef7','#22c55e','#f59e0b','#a78bfa','#ef4444','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6'];
 const DC=['Ne','Po','Út','St','Čt','Pá','So'];
 const DF=['Neděle','Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota'];
-const GOAL=1000;
+const GOAL=450;
 let AD=30,CH={};
 
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
@@ -389,11 +389,14 @@ function renderCharts(sales){
   CH.cmp=new Chart(document.getElementById('cCompare'),{type:'bar',data:{labels:DC,datasets:[{label:'Tento týden',data:d.thisW,backgroundColor:'rgba(79,142,247,.7)',borderRadius:4,borderSkipped:false},{label:'Minulý týden',data:d.lastW,backgroundColor:'rgba(255,255,255,.08)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#8888a0',boxWidth:10,padding:12,font:{size:11}}},tooltip:{...TT,callbacks:{label:c=>`  ${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
 
   // Denní cíl
-  const pct=Math.min(100,Math.round(d.todR/GOAL*100));
+  // Denni profit = pocet dnesních prodejů * prumerná marže
+  const PRODUCTS_MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':18,'25':67,'28':83};
+  const todayProfit=_grafySales?_grafySales.filter(s=>(s.AuthorizationDateTimeGMT||'').slice(0,10)===new Date().toLocaleDateString('sv-SE')).reduce((sum,s)=>sum+(PRODUCTS_MARGIN[String(s.Selection)]||0),0):0;
+  const pct=Math.min(100,Math.round(todayProfit/GOAL*100));
   document.getElementById('gRing').style.strokeDashoffset=276.5-(276.5*pct/100);
   document.getElementById('gPct').textContent=pct+'%';
-  document.getElementById('gToday').textContent=fmt(d.todR);
-  document.getElementById('gLeft').textContent=d.todR>=GOAL?'✅ Splněno!':fmt(Math.max(0,GOAL-d.todR));
+  document.getElementById('gToday').textContent=fmt(todayProfit)+' profit';
+  document.getElementById('gLeft').textContent=todayProfit>=GOAL?'✅ Splněno!':fmt(Math.max(0,GOAL-todayProfit));
   document.getElementById('gSales').textContent=d.todS;
 
   // Heatmapa
