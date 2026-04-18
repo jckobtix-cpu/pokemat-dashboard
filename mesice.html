@@ -145,8 +145,8 @@ td{padding:.75rem 1rem;vertical-align:middle}
               <th>Tržby</th>
               <th>Profit</th>
               <th>Nejprodávanější</th>
-              <th>Hotovost</th>
               <th>Karta</th>
+              <th>Hotovost</th>
               <th>Podíl</th>
             </tr>
           </thead>
@@ -253,8 +253,8 @@ function render(sales){
       <td class="td-rev">${fmt(m.rev)}</td>
       <td class="td-profit">${fmt(m.profit)}</td>
       <td style="font-size:.75rem;color:var(--muted2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bestSlotName}</td>
-      <td class="td-mono" style="color:var(--accent2)">${fmt(m.cash)}</td>
       <td class="td-mono" style="color:var(--accent)">${fmt(m.card)}</td>
+      <td class="td-mono" style="color:var(--accent2)">${fmt(m.cash)}</td>
       <td><div class="bar-wrap"><div class="bar-fill" style="width:${barPct}%"></div></div></td>
     </tr>`;
   }).join('');
