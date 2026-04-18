@@ -206,9 +206,10 @@ function render(sales){
   // Seskup po měsících
   const byMonth={};
   sales.forEach(s=>{
-    const d=gd(s);
-    if(isNaN(d))return;
-    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    // Použij přímo string slice - spolehlivější než Date parsing
+    const dateStr=s.AuthorizationDateTimeGMT||'';
+    if(!dateStr)return;
+    const key=dateStr.slice(0,7); // YYYY-MM
     if(!byMonth[key])byMonth[key]={sales:0,rev:0,profit:0,cash:0,card:0,slots:{}};
     const m=byMonth[key];
     const slot=gs(s);
