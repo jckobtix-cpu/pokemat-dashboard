@@ -182,11 +182,7 @@ function parseDate(s){return new Date((s||'').replace('Z',''));}
 const gd=t=>parseDate(t.AuthorizationDateTimeGMT||'');
 const ga=t=>parseFloat(t.SettlementValue||0);
 const gs=t=>String(t.Selection||'?');
-const pm=t=>{
-  const m=(t.PaymentMethod||'').toLowerCase();
-  if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';
-  return'Karta';
-};
+const pm=t=>{const m=(t.PaymentMethod||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';return'Karta';};
 
 async function loadData(){
   document.getElementById('loading').style.display='flex';
