@@ -316,7 +316,7 @@ function isSameDay(raw){return (raw.AuthorizationDateTimeGMT||'').slice(0,10)===
 const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||'');
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
-function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';if(m.includes('visa'))return'Visa';if(m.includes('master'))return'Mastercard';return'Karta';}
+function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
 
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
