@@ -287,8 +287,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-if(!isPWA && localStorage.getItem('auth')!=='ok')window.location.href='index.html';
-function logout(){localStorage.removeItem('auth');window.location.href='index.html';}
+if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const SLOTS={
   '1':'Black Bolt Booster','2':'Clay Burst Booster','3':'Mega Dream EX Booster',
