@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pokémon Automat – Měsíční přehled</title>
+<title>Pokémon Automat – Produkty</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pokemat">
 <meta name="theme-color" content="#0a0a0c">
 <link rel="manifest" href="/manifest.json">
 <style>
@@ -24,6 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 .layout{display:flex;min-height:100vh}
+
 .sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:.25rem .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
 .logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
@@ -41,11 +43,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 .btn-logout{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;border:none;background:none;font-family:inherit;width:100%;transition:all .15s}
 .btn-logout:hover{background:rgba(239,68,68,.08);color:var(--danger)}
+
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
 .topbar h1{font-size:1rem;font-weight:600;letter-spacing:-.02em}
 .topbar p{font-size:.72rem;color:var(--muted2);margin-top:1px}
 .content{padding:1.5rem 1.75rem;flex:1}
+
 .loading-overlay{position:fixed;inset:0;background:rgba(10,10,12,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:1rem;font-size:.88rem;color:var(--muted2);backdrop-filter:blur(4px)}
 .spinner{width:34px;height:34px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -62,40 +66,45 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .sv{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:.25rem}
 .ss{font-size:.7rem;color:var(--muted2)}
 
-/* TABLE */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
-.table-scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
-thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
-th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--surface2)}
-tbody tr.current-month{background:rgba(79,142,247,.05);border-left:2px solid var(--accent)}
-td{padding:.75rem 1rem;vertical-align:middle}
-.td-month{font-weight:600}
-.td-mono{font-family:'DM Mono',monospace;font-size:.78rem}
-.td-profit{color:var(--accent2);font-weight:600;font-family:'DM Mono',monospace}
-.td-rev{font-family:'DM Mono',monospace}
-.badge-current{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:.62rem;font-weight:600;background:rgba(79,142,247,.12);color:var(--accent);margin-left:6px}
-.bar-wrap{width:80px;height:6px;background:var(--surface3);border-radius:99px;overflow:hidden}
-.bar-fill{height:100%;border-radius:99px;background:var(--accent2);transition:width .5s}
+/* GRID */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+
+/* PRODUCT CARD */
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:border-color .15s,transform .15s}
+.product-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.product-img{width:100%;height:160px;object-fit:contain;background:var(--surface2);padding:.75rem;display:flex;align-items:center;justify-content:center;font-size:4rem}
+.product-img img{width:100%;height:100%;object-fit:contain}
+.product-body{padding:1rem}
+.product-slot{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-bottom:.3rem}
+.product-name{font-size:.9rem;font-weight:700;margin-bottom:.875rem;line-height:1.3}
+.product-prices{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.875rem}
+.price-box{background:var(--surface2);border-radius:8px;padding:.5rem .75rem}
+.price-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:2px}
+.price-val{font-size:.9rem;font-weight:700;font-family:'DM Mono',monospace}
+.price-buy{color:var(--danger)}
+.price-sell{color:var(--accent2)}
+.product-stats{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;border-top:1px solid var(--border)}
+.profit-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:4px 10px;font-size:.75rem;font-weight:700;color:var(--accent2)}
+.margin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.15);border-radius:8px;padding:4px 10px;font-size:.75rem;font-weight:700;color:var(--accent)}
+.product-sold{font-size:.72rem;color:var(--muted2);text-align:right}
+.product-sold strong{color:var(--text);font-weight:600}
+.product-total-profit{font-size:.72rem;color:var(--accent2);font-weight:600}
 
 /* MOBILE NAV */
 .mobile-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 8px;z-index:999;display:flex;justify-content:space-around}
-.mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.6rem;font-weight:500;color:var(--muted2);text-decoration:none;padding:4px 8px;border-radius:8px;transition:color .15s}
+.mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.6rem;font-weight:500;color:var(--muted2);text-decoration:none;padding:4px 12px;border-radius:8px;transition:color .15s}
 .mobile-nav a.active{color:var(--accent)}
-.mobile-nav a span:first-child{font-size:1.2rem}
+.mobile-nav a span:first-child{font-size:1.3rem}
 @media(min-width:901px){.mobile-nav{display:none}}
+@media(max-width:900px){.sidebar{display:none}.content{padding:1rem 1rem 80px}.stats-row{grid-template-columns:repeat(2,1fr)}.products-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.product-img{height:120px}}
 @media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:900px){.sidebar{display:none}.content{padding:1rem 1rem 80px}}
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <span>Načítám měsíční přehled...</span>
+  <span>Načítám produkty...</span>
 </div>
 
 <div class="layout">
@@ -109,12 +118,13 @@ td{padding:.75rem 1rem;vertical-align:middle}
     <a href="dashboard.html" class="nav-item"><span class="nav-ico">📊</span> Dashboard</a>
     <a href="grafy.html" class="nav-item"><span class="nav-ico">📈</span> Grafy</a>
     <a href="prodeje.html" class="nav-item"><span class="nav-ico">🧾</span> Prodeje</a>
-    <a href="produkty.html" class="nav-item"><span class="nav-ico">📦</span> Produkty</a>
-    <a href="mesice.html" class="nav-item active"><span class="nav-ico">📅</span> Měsíční přehled</a>
+    <a href="produkty.html" class="nav-item active"><span class="nav-ico">📦</span> Produkty</a>
+    <a href="mesice.html" class="nav-item"><span class="nav-ico">📅</span> Měsíční přehled</a>
   </div>
   <div class="nav-sec">
     <div class="nav-lbl">Automat</div>
     <a href="stav.html" class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</a>
+    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
   </div>
   <div class="sidebar-foot">
     <div class="api-st"><div class="api-dot"></div><span id="apiStatus">–</span></div>
@@ -124,36 +134,19 @@ td{padding:.75rem 1rem;vertical-align:middle}
 
 <div class="main">
   <div class="topbar">
-    <div><h1>Měsíční přehled</h1><p>Tržby a profit za každý měsíc provozu</p></div>
+    <div><h1>Produkty & Profit</h1><p>Přehled všech produktů, marží a zisků</p></div>
   </div>
+
   <div class="content">
 
     <div class="stats-row">
-      <div class="sc sc-blue"><div class="sl">Celkové tržby</div><div class="sv" id="sTotalRev">–</div><div class="ss">od začátku provozu</div></div>
       <div class="sc sc-green"><div class="sl">Celkový profit</div><div class="sv" id="sTotalProfit">–</div><div class="ss">od začátku provozu</div></div>
-      <div class="sc sc-warn"><div class="sl">Nejlepší měsíc</div><div class="sv" id="sBestMonth">–</div><div class="ss" id="sBestMonthSub">–</div></div>
-      <div class="sc sc-purple"><div class="sl">Průměr / měsíc</div><div class="sv" id="sAvgMonth">–</div><div class="ss">průměrné tržby</div></div>
+      <div class="sc sc-blue"><div class="sl">Profit tento měsíc</div><div class="sv" id="sMonthProfit">–</div><div class="ss" id="sMonthName">–</div></div>
+      <div class="sc sc-warn"><div class="sl">Nejziskovější produkt</div><div class="sv" id="sBestProduct">–</div><div class="ss" id="sBestProductSub">–</div></div>
+      <div class="sc sc-purple"><div class="sl">Průměrná marže</div><div class="sv" id="sAvgMargin">–</div><div class="ss">přes všechny produkty</div></div>
     </div>
 
-    <div class="table-wrap">
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Měsíc</th>
-              <th>Prodejů</th>
-              <th>Tržby</th>
-              <th>Profit</th>
-              <th>Nejprodávanější</th>
-              <th>Karta</th>
-              <th>Hotovost</th>
-              <th>Podíl</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-    </div>
+    <div class="products-grid" id="productsGrid"></div>
 
   </div>
 </div>
@@ -163,8 +156,8 @@ td{padding:.75rem 1rem;vertical-align:middle}
   <a href="dashboard.html"><span>📊</span><span>Dashboard</span></a>
   <a href="grafy.html"><span>📈</span><span>Grafy</span></a>
   <a href="prodeje.html"><span>🧾</span><span>Prodeje</span></a>
-  <a href="produkty.html"><span>📦</span><span>Produkty</span></a>
-  <a href="mesice.html" class="active"><span>📅</span><span>Měsíce</span></a>
+  <a href="produkty.html" class="active"><span>📦</span><span>Produkty</span></a>
+  <a href="mesice.html"><span>📅</span><span>Měsíce</span></a>
 </nav>
 
 <script>
@@ -172,88 +165,140 @@ const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navi
 if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
-const SLOTS={'1':'Black Bolt Booster','2':'Clay Burst Booster','3':'Mega Dream EX Booster','4':'Ancient Roar Booster','5':'Mega Symphonia Booster','6':'Scarlet & Violet Booster','7':'Twilight Masquerade Booster','8':'Surging Sparks Booster','9':'Destined Rivals Booster','10':'Ascended Heroes Booster','11':'Temporal Forces Booster','12':'Journey Together Booster','13':'Single karta','14':'Hard Sleeves','15':'Sleeves','16':'Blister 2pack','17':'Blister 3pack','18':'Shrouded Fable Tin','19':'Battle Styles Booster','20':'Terestal Festival Booster (JP)','21':'Astral Radiance Booster','22':'Obsidian Flames Booster','23':'Vivid Voltage Booster','24':'Team of Glory Booster (JP)','25':'Unova Black Tin','26':'Mega Heroes Tin','29':'Perfect Order Booster'};
-const MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':33,'25':67,'26':83};
+const PRODUCTS = {
+  '1':  {name:'Black Bolt Booster',       buy:115, sell:170, margin:50},
+  '2':  {name:'Clay Burst Booster',        buy:47,  sell:120, margin:52},
+  '3':  {name:'Mega Dream EX Booster',     buy:229, sell:350, margin:100},
+  '4':  {name:'Ancient Roar Booster',      buy:43,  sell:110, margin:43},
+  '5':  {name:'Mega Symphonia Booster',    buy:69,  sell:120, margin:45},
+  '6':  {name:'Scarlet & Violet Booster',  buy:110, sell:150, margin:33},
+  '7':  {name:'Twilight Masquerade Booster',buy:169,sell:220, margin:42},
+  '8':  {name:'Surging Sparks Booster',    buy:132, sell:170, margin:31},
+  '9':  {name:'Destined Rivals Booster',   buy:140, sell:220, margin:41},
+  '10': {name:'Ascended Heroes Booster',   buy:250, sell:300, margin:41},
+  '11': {name:'Temporal Forces Booster',   buy:139, sell:200, margin:50},
+  '12': {name:'Journey Together Booster',  buy:99,  sell:150, margin:42},
+  '13': {name:'Single karta',              buy:20,  sell:70,  margin:38},
+  '14': {name:'Hard Sleeves',              buy:49,  sell:120, margin:59},
+  '15': {name:'Sleeves',                   buy:29,  sell:80,  margin:42},
+  '16': {name:'Blister 2pack',             buy:499, sell:600, margin:83},
+  '17': {name:'Blister 3pack',             buy:649, sell:800, margin:125},
+  '18': {name:'Shrouded Fable Tin',        buy:300, sell:400, margin:67},
+  '19': {name:'Battle Styles Booster',     buy:249, sell:300, margin:42},
+  '20': {name:'Terestal Festival Booster (JP)',buy:309,sell:400,margin:75},
+  '21': {name:'Astral Radiance Booster',   buy:195, sell:250, margin:45},
+  '22': {name:'Obsidian Flames Booster',   buy:159, sell:250, margin:75},
+  '23': {name:'Vivid Voltage Booster',     buy:179, sell:230, margin:42},
+  '24': {name:'Team of Glory Booster (JP)',buy:106, sell:150, margin:33},
+  '25': {name:'Unova Black Tin',           buy:369, sell:500, margin:67},
+  '26': {name:'Mega Heroes Tin',           buy:369, sell:450, margin:83},
+  '29': {name:'Perfect Order Booster',        buy:119, sell:170, margin:42},
+};
 
-const MONTHS_CS=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
-const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
+const fmt = v => Math.round(v).toLocaleString('cs-CZ') + ' Kč';
+const MONTHS_CS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
 
-function parseDate(s){return new Date((s||'').replace('Z',''));}
-const gd=t=>parseDate(t.AuthorizationDateTimeGMT||'');
-const ga=t=>parseFloat(t.SettlementValue||0);
-const gs=t=>String(t.Selection||'?');
-const pm=t=>{const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';return'Karta';};
+function todayStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function monthStartStr(){return todayStr().slice(0,7)+'-01';}
 
 async function loadData(){
   document.getElementById('loading').style.display='flex';
   try{
-    const res=await fetch('/api/sales');
-    const sales=await res.json();
-    render(sales);
-    document.getElementById('apiStatus').textContent=`${sales.length} prodejů`;
+    const res = await fetch('/api/sales');
+    const sales = await res.json();
+    renderProducts(sales);
+    document.getElementById('apiStatus').textContent = `${sales.length} prodejů`;
   }catch(e){
     console.error(e);
-    document.getElementById('apiStatus').textContent='Chyba';
+    document.getElementById('apiStatus').textContent = 'Chyba';
   }finally{
     document.getElementById('loading').style.display='none';
   }
 }
 
-function render(sales){
-  const now=new Date();
-  const currentMonthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+function renderProducts(sales){
+  const now = new Date();
+  const mStr = monthStartStr();
 
-  // Seskup po měsících
-  const byMonth={};
-  sales.forEach(s=>{
-    // Použij přímo string slice - spolehlivější než Date parsing
-    const dateStr=s.AuthorizationDateTimeGMT||'';
-    if(!dateStr)return;
-    const key=dateStr.slice(0,7); // YYYY-MM
-    if(!byMonth[key])byMonth[key]={sales:0,rev:0,profit:0,cash:0,card:0,slots:{}};
-    const m=byMonth[key];
-    const slot=gs(s);
-    m.sales++;
-    m.rev+=ga(s);
-    m.profit+=(MARGIN[slot]||0);
-    if(pm(s)==='Hotovost')m.cash+=ga(s);else m.card+=ga(s);
-    m.slots[slot]=(m.slots[slot]||0)+1;
+  // Spočítej prodeje per slot
+  const slotStats = {};
+  sales.forEach(s => {
+    const slot = String(s.Selection || '?');
+    if(!slotStats[slot]) slotStats[slot] = {count:0, revenue:0, profit:0, monthProfit:0};
+    const p = PRODUCTS[slot];
+    const margin = p ? p.margin : 0;
+    slotStats[slot].count++;
+    slotStats[slot].revenue += s.SettlementValue || 0;
+    slotStats[slot].profit += margin;
+    const ds = (s.AuthorizationDateTimeGMT||'').slice(0,10);
+    if(ds >= mStr) slotStats[slot].monthProfit += margin;
   });
 
-  const months=Object.keys(byMonth).sort((a,b)=>b.localeCompare(a));
-  const totalRev=Object.values(byMonth).reduce((s,m)=>s+m.rev,0);
-  const totalProfit=Object.values(byMonth).reduce((s,m)=>s+m.profit,0);
-  const bestMonthKey=months.reduce((a,b)=>byMonth[a].rev>byMonth[b].rev?a:b,months[0]);
-  const avgRev=totalRev/months.length;
+  // Celkové stats
+  let totalProfit = 0, monthProfit = 0;
+  Object.values(slotStats).forEach(s => {
+    totalProfit += s.profit;
+    monthProfit += s.monthProfit;
+  });
 
-  document.getElementById('sTotalRev').textContent=fmt(totalRev);
-  document.getElementById('sTotalProfit').textContent=fmt(totalProfit);
-  const bm=bestMonthKey.split('-');
-  document.getElementById('sBestMonth').textContent=MONTHS_CS[parseInt(bm[1])-1]+' '+bm[0];
-  document.getElementById('sBestMonthSub').textContent=fmt(byMonth[bestMonthKey].rev)+' tržby';
-  document.getElementById('sAvgMonth').textContent=fmt(avgRev);
+  // Nejziskovější produkt
+  let bestSlot = null, bestProfit = 0;
+  Object.entries(slotStats).forEach(([slot, s]) => {
+    if(s.profit > bestProfit){bestProfit = s.profit; bestSlot = slot;}
+  });
 
-  const maxRev=Math.max(...months.map(k=>byMonth[k].rev));
+  // Průměrná marže
+  const margins = Object.keys(PRODUCTS).map(k => {
+    const p = PRODUCTS[k];
+    return Math.round((p.margin / p.sell) * 100);
+  });
+  const avgMargin = Math.round(margins.reduce((a,b)=>a+b,0)/margins.length);
 
-  document.getElementById('tableBody').innerHTML=months.map(key=>{
-    const m=byMonth[key];
-    const parts=key.split('-');
-    const monthName=MONTHS_CS[parseInt(parts[1])-1]+' '+parts[0];
-    const isCurrent=key===currentMonthKey;
-    const bestSlotEntry=Object.entries(m.slots).sort((a,b)=>b[1]-a[1])[0];
-    const bestSlotName=bestSlotEntry?SLOTS[bestSlotEntry[0]]||`Slot ${bestSlotEntry[0]}`:'–';
-    const barPct=Math.round(m.rev/maxRev*100);
+  document.getElementById('sTotalProfit').textContent = fmt(totalProfit);
+  document.getElementById('sMonthProfit').textContent = fmt(monthProfit);
+  document.getElementById('sMonthName').textContent = MONTHS_CS[now.getMonth()] + ' ' + now.getFullYear();
+  document.getElementById('sBestProduct').textContent = bestSlot ? PRODUCTS[bestSlot]?.name.split(' ').slice(0,2).join(' ') : '–';
+  document.getElementById('sBestProductSub').textContent = bestSlot ? fmt(bestProfit) + ' profit' : '–';
+  document.getElementById('sAvgMargin').textContent = avgMargin + '%';
 
-    return`<tr class="${isCurrent?'current-month':''}">
-      <td class="td-month">${monthName}${isCurrent?'<span class="badge-current">● Aktuální</span>':''}</td>
-      <td class="td-mono">${m.sales}</td>
-      <td class="td-rev">${fmt(m.rev)}</td>
-      <td class="td-profit">${fmt(m.profit)}</td>
-      <td style="font-size:.75rem;color:var(--muted2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bestSlotName}</td>
-      <td class="td-mono" style="color:var(--accent)">${fmt(m.card)}</td>
-      <td class="td-mono" style="color:var(--accent2)">${fmt(m.cash)}</td>
-      <td><div class="bar-wrap"><div class="bar-fill" style="width:${barPct}%"></div></div></td>
-    </tr>`;
+  // Render karty
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = Object.entries(PRODUCTS).map(([slot, p]) => {
+    const stats = slotStats[slot] || {count:0, profit:0};
+    const marginPct = Math.round((p.margin / p.sell) * 100);
+    const imgSrc = `/images/slot${slot}.png`;
+    
+    return `<div class="product-card">
+      <div class="product-img" onclick="this.style.background='var(--surface3)'">
+        <img src="${imgSrc}" alt="${p.name}" 
+             onerror="this.parentElement.innerHTML='<span style=font-size:3rem>📦</span>'"
+             style="width:100%;height:100%;object-fit:contain">
+      </div>
+      <div class="product-body">
+        <div class="product-slot">Slot ${slot}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-prices">
+          <div class="price-box">
+            <div class="price-lbl">Nákup</div>
+            <div class="price-val price-buy">${p.buy} Kč</div>
+          </div>
+          <div class="price-box">
+            <div class="price-lbl">Prodej</div>
+            <div class="price-val price-sell">${p.sell} Kč</div>
+          </div>
+        </div>
+        <div class="product-stats">
+          <div>
+            <div class="profit-badge">+${p.margin} Kč / ks</div>
+          </div>
+          <div class="margin-badge">${marginPct}% marže</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)">
+          <div class="product-sold">Prodáno: <strong>${stats.count}×</strong></div>
+          <div class="product-total-profit">${fmt(stats.profit)} profit</div>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
