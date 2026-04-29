@@ -162,8 +162,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-if(!isPWA && localStorage.getItem('auth')!=='ok')window.location.href='index.html';
-function logout(){localStorage.removeItem('auth');window.location.href='index.html';}
+if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
+function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
 const PRODUCTS = {
   '1':  {name:'Black Bolt Booster',       buy:115, sell:170, margin:50},
