@@ -10,7 +10,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pokémon Automat – Grafy</title>
+<title>Pokémon Automat – Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
@@ -28,6 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 .layout{display:flex;min-height:100vh}
 
+/* SIDEBAR */
 .sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:.25rem .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
 .logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
@@ -47,6 +48,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .btn-logout{display:flex;align-items:center;gap:8px;padding:.48rem .6rem;border-radius:8px;font-size:.82rem;font-weight:500;color:var(--muted2);cursor:pointer;border:none;background:none;font-family:inherit;width:100%;transition:all .15s}
 .btn-logout:hover{background:rgba(239,68,68,.08);color:var(--danger)}
 
+/* MAIN */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
 .topbar h1{font-size:1rem;font-weight:600;letter-spacing:-.02em}
@@ -60,77 +62,69 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .btn-ref:hover{background:var(--accent);border-color:var(--accent)}
 .content{padding:1.5rem 1.75rem;flex:1}
 
+/* LOADING */
 .loading-overlay{position:fixed;inset:0;background:rgba(10,10,12,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:1rem;font-size:.88rem;color:var(--muted2);backdrop-filter:blur(4px)}
 .spinner{width:34px;height:34px;border:2.5px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.sec-hdr{display:flex;align-items:center;gap:10px;margin:1.5rem 0 1rem}
-.sec-hdr:first-child{margin-top:0}
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:0 0 1rem}
 .sec-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);white-space:nowrap}
 .sec-line{flex:1;height:1px;background:var(--border)}
 
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:.875rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.25rem;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;cursor:default}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px)}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.sc-blue::after{background:linear-gradient(90deg,var(--accent) 50%,transparent)}
+.sc-green::after{background:linear-gradient(90deg,var(--accent2) 60%,transparent)}
+.sc-warn::after{background:linear-gradient(90deg,var(--warn) 45%,transparent)}
+.sc-red::after{background:linear-gradient(90deg,var(--danger) 35%,transparent)}
+.sc-purple::after{background:linear-gradient(90deg,var(--purple) 40%,transparent)}
+.sc-pink::after{background:linear-gradient(90deg,var(--pink) 35%,transparent)}
+.sc-cyan::after{background:linear-gradient(90deg,var(--cyan) 45%,transparent)}
+.sc-lime::after{background:linear-gradient(90deg,var(--lime) 50%,transparent)}
+.st{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem}
+.sl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2)}
+.badge{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:99px}
+.bu{background:rgba(34,197,94,.12);color:var(--accent2)}
+.bn{background:rgba(107,107,122,.12);color:var(--muted2)}
+.bs{background:rgba(245,158,11,.12);color:var(--warn)}
+.bp{background:rgba(167,139,250,.12);color:var(--purple)}
+.sv{font-size:1.75rem;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:.3rem}
+.ss{font-size:.7rem;color:var(--muted2);line-height:1.4}
+.ss strong{color:var(--text);font-weight:600}
+
+/* CARD */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.375rem}
 .ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
 .ct{font-size:.875rem;font-weight:600;letter-spacing:-.01em}
 .cs{font-size:.7rem;color:var(--muted2);margin-top:2px}
+.gm{display:grid;grid-template-columns:1fr 310px;gap:.875rem}
 
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:.875rem}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.875rem;margin-bottom:.875rem}
-.mb{margin-bottom:.875rem}
-
-/* PRODUCTS */
-.pr{display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:1px solid var(--border)}
-.pr:last-child{border-bottom:none}
-.prk{width:18px;font-size:.68rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:right;flex-shrink:0}
-.pi{flex:1;min-width:0}
-.pn{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ps{font-size:.66rem;color:var(--muted2)}
-.pbw{width:50px;height:3px;background:var(--surface3);border-radius:99px;overflow:hidden;flex-shrink:0}
-.pb{height:100%;border-radius:99px;background:var(--accent)}
-.pc{font-size:.75rem;font-family:'DM Mono',monospace;width:26px;text-align:right;flex-shrink:0;color:var(--muted2)}
-.pv{font-size:.72rem;color:var(--accent2);font-weight:600;width:60px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace}
-
-/* HEATMAP */
-.hm-wrap{overflow-x:auto}
-.hm-grid{display:grid;grid-template-columns:30px repeat(24,1fr);gap:3px;min-width:500px}
-.hm-h{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:center;padding-bottom:2px}
-.hm-d{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted2);text-align:right;padding-right:5px;line-height:18px}
-.hm-c{height:18px;border-radius:3px}
-.h0{background:var(--surface3)}.h1{background:rgba(79,142,247,.18)}.h2{background:rgba(79,142,247,.38)}.h3{background:rgba(79,142,247,.58)}.h4{background:rgba(79,142,247,.78)}.h5{background:var(--accent)}
-
-/* GOAL */
-.goal-wrap{display:flex;align-items:center;gap:1.5rem}
-.goal-ring{position:relative;width:110px;height:110px;flex-shrink:0}
-.goal-ring svg{transform:rotate(-90deg)}
-.grb{fill:none;stroke:var(--surface3);stroke-width:8}
-.grf{fill:none;stroke:var(--accent2);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
-.goal-ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.gpct{font-size:1.4rem;font-weight:700;line-height:1}
-.glbl{font-size:.6rem;color:var(--muted2);margin-top:2px}
-.goal-info{flex:1;display:flex;flex-direction:column;gap:10px}
-.gi-row{display:flex;justify-content:space-between;align-items:center;font-size:.78rem}
-.gi-row span{color:var(--muted2)}
-.gi-row strong{font-weight:600;font-family:'DM Mono',monospace}
-
-/* PAY */
-.pay-list{display:flex;flex-direction:column;gap:12px}
-.pay-row{display:flex;align-items:center;gap:10px;font-size:.78rem}
-.pay-ico{font-size:1.1rem;width:26px;text-align:center;flex-shrink:0}
-.pay-name{flex:1;font-weight:500}
-.pay-bw{width:100px;height:5px;background:var(--surface3);border-radius:99px;overflow:hidden;flex-shrink:0}
-.pay-b{height:100%;border-radius:99px}
-.pay-pct{width:32px;text-align:right;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted2)}
-
+/* TX */
+.tx-row{display:flex;align-items:center;gap:9px;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.78rem}
+.tx-row:last-child{border-bottom:none}
+.tx-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dg{background:var(--accent2)}.db{background:var(--accent)}.dw{background:var(--warn)}
+.tt{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted2);width:40px;flex-shrink:0}
+.tp{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{color:var(--muted2);font-size:.68rem;width:68px;flex-shrink:0}
+.ta{font-family:'DM Mono',monospace;font-weight:600;color:var(--accent2);font-size:.78rem}
 .empty{color:var(--muted2);font-size:.78rem;padding:.75rem 0}
 
-@media(max-width:1200px){.g2,.g3{grid-template-columns:1fr 1fr}}
+/* DEMO BADGE */
+.demo-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:3px 8px;font-size:.68rem;font-weight:600;color:var(--warn);margin-bottom:1rem}
+
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}.gm{grid-template-columns:1fr}}
 
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;justify-content:space-around}
 .mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.6rem;font-weight:500;color:var(--muted2);text-decoration:none;padding:4px 12px;border-radius:8px;transition:color .15s}
 .mobile-nav a.active{color:var(--accent)}
 .mobile-nav a span:first-child{font-size:1.2rem}
 @media(max-width:900px){.mobile-nav{display:flex}.content{padding:1rem 1rem 80px}}
-@media(max-width:900px){.sidebar{display:none}.g2,.g3{grid-template-columns:1fr}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
+@media(max-width:900px){.sidebar{display:none}.content{padding:1rem}.topbar{padding:.875rem 1rem}}
 
 .mobile-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 8px;z-index:999;display:flex;justify-content:space-around}
 .mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.6rem;font-weight:500;color:var(--muted2);text-decoration:none;padding:4px 12px;border-radius:8px;transition:color .15s}
@@ -143,7 +137,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <span>Načítám grafy...</span>
+  <span>Načítám data...</span>
 </div>
 
 <div class="layout">
@@ -155,8 +149,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
   <div class="nav-sec">
     <div class="nav-lbl">Navigace</div>
-    <a href="dashboard.html" class="nav-item"><span class="nav-ico">📊</span> Dashboard</a>
-    <a href="grafy.html" class="nav-item active"><span class="nav-ico">📈</span> Grafy</a>
+    <a href="dashboard.html" class="nav-item active"><span class="nav-ico">📊</span> Dashboard</a>
+    <a href="grafy.html" class="nav-item"><span class="nav-ico">📈</span> Grafy</a>
     <a href="prodeje.html" class="nav-item"><span class="nav-ico">🧾</span> Prodeje</a>
     <a href="produkty.html" class="nav-item"><span class="nav-ico">📦</span> Produkty</a>
     <a href="mesice.html" class="nav-item"><span class="nav-ico">📅</span> Měsíční přehled</a>
@@ -164,121 +158,58 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div class="nav-sec">
     <div class="nav-lbl">Automat</div>
     <a href="stav.html" class="nav-item"><span class="nav-ico">🖥️</span> Stav automatu</a>
-    <div class="nav-item"><span class="nav-ico">⚙️</span> Nastavení</div>
   </div>
   <div class="sidebar-foot">
-    <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">–</span></div>
+    <div class="api-st"><div class="api-dot" id="apiDot"></div><span id="apiStatus">Připojuji...</span></div>
     <button class="btn-logout" onclick="logout()"><span class="nav-ico">🚪</span> Odhlásit se</button>
   </div>
 </nav>
 
 <div class="main">
   <div class="topbar">
-    <div><h1>Grafy & Analytika</h1><p>Detailní přehled všech statistik</p></div>
+    <div><h1>Sales Dashboard</h1><p>Aktualizováno: <span id="lastUpdate">–</span> · Automat 235556676</p></div>
     <div class="tbr">
       <div class="ptabs">
         <button class="ptab" onclick="setPeriod(this,7)">7 dní</button>
         <button class="ptab active" onclick="setPeriod(this,30)">30 dní</button>
         <button class="ptab" onclick="setPeriod(this,90)">90 dní</button>
       </div>
-      <button class="btn-ref" onclick="renderCharts()">↻ Obnovit</button>
+      <button class="btn-ref" onclick="loadData()">↻ Obnovit</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- KOLÁČOVÉ GRAFY -->
-    <div class="sec-hdr"><span class="sec-title">Koláčové grafy</span><div class="sec-line"></div></div>
+    <div id="demoBadge" style="display:none" class="demo-badge">⚠️ Demo data – čekáme na Nayax API přístup</div>
 
-    <div class="g3">
+    <!-- PŘEHLED -->
+    <div class="sec-hdr"><span class="sec-title">Přehled</span><div class="sec-line"></div></div>
+
+    <div class="stats-row">
+      <div class="sc sc-blue"><div class="st"><div class="sl">Celkové tržby</div><span class="badge bu" id="b1">–</span></div><div class="sv" id="v-rev">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-cyan"><div class="st"><div class="sl">Tento měsíc</div><span class="badge bn">Měsíc</span></div><div class="sv" id="v-month">–</div><div class="ss" id="s-month">načítám...</div></div>
+      <div class="sc sc-lime"><div class="st"><div class="sl">Tento týden</div><span class="badge bn">Týden</span></div><div class="sv" id="v-week">–</div><div class="ss">od pondělí do dnes</div></div>
+      <div class="sc sc-green"><div class="st"><div class="sl">Dnešní tržby</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today">–</div><div class="ss" id="s-today">načítám...</div></div>
+    </div>
+    <div class="stats-row" style="margin-bottom:1.5rem">
+      <div class="sc sc-green"><div class="st"><div class="sl">Celkový profit</div><span class="badge bn">Profit</span></div><div class="sv" id="v-total-profit">–</div><div class="ss">od začátku provozu</div></div>
+      <div class="sc sc-cyan"><div class="st"><div class="sl">Profit dnes</div><span class="badge bn">Dnes</span></div><div class="sv" id="v-today-profit">–</div><div class="ss" id="s-today-profit">čistý zisk dnes</div></div>
+      <div class="sc sc-pink"><div class="st"><div class="sl">Hotovost vs Karta</div><span class="badge bn">Split</span></div><div class="sv" id="v-split">–</div><div class="ss" id="s-split">načítám...</div></div>
+      <div class="sc sc-red"><div class="st"><div class="sl">Celkem prodejů</div><span class="badge bu" id="b2">–</span></div><div class="sv" id="v-sales">–</div><div class="ss">od začátku provozu</div></div>
+    </div>
+
+    <!-- GRAF + TRANSAKCE -->
+    <div class="sec-hdr"><span class="sec-title">Přehled tržeb</span><div class="sec-line"></div></div>
+
+    <div class="gm">
       <div class="card">
-        <div class="ch"><div><div class="ct">Podíl produktů na tržbách</div><div class="cs">Kč · který produkt vydělává nejvíc</div></div></div>
-        <div style="width:180px;margin:0 auto"><canvas id="cDonut1"></canvas></div>
-        <div id="leg1" style="display:flex;flex-direction:column;gap:8px;margin-top:1rem"></div>
+        <div class="ch"><div><div class="ct">Tržby po dnech</div><div class="cs">Celkové denní tržby v Kč</div></div></div>
+        <div style="position:relative;height:220px"><canvas id="cRev"></canvas></div>
       </div>
       <div class="card">
-        <div class="ch"><div><div class="ct">Podíl dle počtu prodejů</div><div class="cs">Ks · který produkt se nejvíc prodává</div></div></div>
-        <div style="width:180px;margin:0 auto"><canvas id="cDonut2"></canvas></div>
-        <div id="leg2" style="display:flex;flex-direction:column;gap:8px;margin-top:1rem"></div>
+        <div class="ch"><div><div class="ct">Poslední transakce</div><div class="cs">Nejnovější prodeje</div></div></div>
+        <div id="txList"><div class="empty">Načítám...</div></div>
       </div>
-      <div class="card">
-        <div class="ch"><div><div class="ct">Platební metody</div><div class="cs">Jak zákazníci platí</div></div></div>
-        <div style="width:180px;margin:0 auto"><canvas id="cDonut3"></canvas></div>
-        <div id="leg3" style="display:flex;flex-direction:column;gap:8px;margin-top:1rem"></div>
-      </div>
-    </div>
-
-    <!-- SLOUPCOVÉ GRAFY -->
-    <div class="sec-hdr"><span class="sec-title">Prodeje v čase</span><div class="sec-line"></div></div>
-
-    <div class="g2">
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Prodeje dle dne v týdnu</div><div class="cs">Průměrné tržby v Kč dle dne</div></div></div>
-        <div style="position:relative;height:200px"><canvas id="cWeek"></canvas></div>
-      </div>
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Prodeje dle hodiny dne</div><div class="cs">Počet transakcí za každou hodinu</div></div></div>
-        <div style="position:relative;height:200px"><canvas id="cHour"></canvas></div>
-      </div>
-    </div>
-
-    <div class="g2">
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Srovnání týdnů</div><div class="cs">Tento (modrá) vs minulý týden (šedá) · Kč</div></div></div>
-        <div style="position:relative;height:200px"><canvas id="cCompare"></canvas></div>
-      </div>
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Denní cíl profitu</div><div class="cs">Cíl: 450 Kč čistého profitu</div></div></div>
-        <div class="goal-wrap">
-          <div class="goal-ring">
-            <svg width="110" height="110" viewBox="0 0 110 110"><circle class="grb" cx="55" cy="55" r="44"/><circle class="grf" id="gRing" cx="55" cy="55" r="44" stroke-dasharray="276.5" stroke-dashoffset="276.5"/></svg>
-            <div class="goal-ctr"><div class="gpct" id="gPct">0%</div><div class="glbl">splněno</div></div>
-          </div>
-          <div class="goal-info">
-            <div class="gi-row"><span>Dnes</span><strong id="gToday">–</strong></div>
-            <div class="gi-row"><span>Cíl</span><strong>450 Kč</strong></div>
-            <div class="gi-row"><span>Zbývá</span><strong id="gLeft">–</strong></div>
-            <div class="gi-row"><span>Prodejů dnes</span><strong id="gSales">–</strong></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- HEATMAPA -->
-    <div class="sec-hdr"><span class="sec-title">Aktivita</span><div class="sec-line"></div></div>
-
-    <div class="card mb">
-      <div class="ch"><div><div class="ct">Heatmapa aktivity</div><div class="cs">Kdy se prodává nejvíc – počet transakcí dle dne a hodiny</div></div></div>
-      <div class="hm-wrap"><div id="heatmap"></div></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.66rem;color:var(--muted2)">
-        <span>Méně</span>
-        <div style="width:10px;height:10px;border-radius:2px;background:var(--surface3)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:rgba(79,142,247,.2)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:rgba(79,142,247,.5)"></div>
-        <div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>
-        <span>Více</span>
-      </div>
-    </div>
-
-    <!-- TOP PRODUKTY -->
-    <div class="sec-hdr"><span class="sec-title">Top produkty</span><div class="sec-line"></div></div>
-
-    <div class="g2">
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Žebříček dle tržeb</div><div class="cs">Nejvíc vydělávající produkty</div></div></div>
-        <div id="prodRevList"></div>
-      </div>
-      <div class="card mb">
-        <div class="ch"><div><div class="ct">Žebříček dle kusů</div><div class="cs">Nejvíc prodávané produkty</div></div></div>
-        <div id="prodCntList"></div>
-      </div>
-    </div>
-
-    <!-- PLATEBNÍ METODY detail -->
-    <div class="sec-hdr"><span class="sec-title">Platební metody – detail</span><div class="sec-line"></div></div>
-    <div class="card mb">
-      <div class="ch"><div><div class="ct">Přehled platebních metod</div><div class="cs">Tržby a podíl dle způsobu platby</div></div></div>
-      <div class="pay-list" id="payList"></div>
     </div>
 
   </div>
@@ -290,173 +221,173 @@ const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navi
 if(!isPWA && sessionStorage.getItem('auth')!=='ok')window.location.href='index.html';
 function logout(){sessionStorage.removeItem('auth');window.location.href='index.html';}
 
-const SLOTS={
-  '1':'Black Bolt Booster','2':'Clay Burst Booster','3':'Mega Dream EX Booster',
-  '4':'Ancient Roar Booster','5':'Mega Symphonia Booster','6':'Scarlet & Violet Booster',
-  '7':'Twilight Masquerade Booster','8':'Surging Sparks Booster','9':'Destined Rivals Booster',
-  '10':'Ascended Heroes Booster','11':'Temporal Forces Booster','12':'Journey Together Booster',
-  '13':'Single karta','14':'Hard Sleeves','15':'Sleeves','16':'Blister 2pack',
-  '17':'Blister 3pack','18':'Shrouded Fable Tin','19':'Battle Styles Booster',
-  '20':'Terestal Festival Booster (JP)','21':'Astral Radiance Booster',
-  '22':'Obsidian Flames Booster','23':'Vivid Voltage Booster',
-  '24':'Team of Glory Booster (JP)','25':'Unova Black Tin','26':'Mega Heroes Tin','29':'Perfect Order Booster'
-};
-const COLORS=['#4f8ef7','#22c55e','#f59e0b','#a78bfa','#ef4444','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6'];
+const SLOTS={};
+const PRODUCTS_MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':33,'25':67,'26':83,'29':42};
 const DC=['Ne','Po','Út','St','Čt','Pá','So'];
-const DF=['Neděle','Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota'];
-const GOAL=450;
-let AD=30,CH={};
+const GOAL=1000;
+let AD=30,cRev;
 
 const fmt=v=>Math.round(v).toLocaleString('cs-CZ')+' Kč';
 const fmts=v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v);
-const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
-function parseDate(s){return new Date((s||'').replace('Z',''));}
-function todayStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
-function isSameDay(raw){return (raw.AuthorizationDateTimeGMT||'').slice(0,10)===todayStr();}
 const gd=t=>parseDate(t.AuthorizationDateTimeGMT||t.SaleDate||t.Date||t.TransactionDate||'');
 const ga=t=>parseFloat(t.SettlementValue||t.AuthorizationValue||t.Amount||t.amount||t.Price||0);
 const gs=t=>t.Selection||t.SlotNumber||t.slotNumber||t.ProductId||'?';
+const sn=n=>SLOTS[String(n)]||`Slot ${n}`;
 function pm(t){const m=(t.PaymentMethod||t.CardBrand||t.paymentType||'').toLowerCase();if(m.includes('hotovost')||m.includes('cash'))return'Hotovost';if(m.includes('apple'))return'Apple Pay';if(m.includes('google'))return'Google Pay';return'Karta';}
+function dc(m){if(m==='Hotovost')return'dw';if(m.includes('Pay'))return'db';return'dg';}
+
+// Data jsou v českém čase - porovnáváme datumy jako stringy
+function parseDate(s){return new Date((s||'').replace('Z',''));}
+
+// Dnešní datum jako string YYYY-MM-DD
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+// Datum záznamu jako string YYYY-MM-DD
+function dateStr(s){return (s.AuthorizationDateTimeGMT||'').slice(0,10);}
+// Začátek týdne jako string (pondělí)
+function weekStartStr(){
+  const n=new Date();
+  const dow=n.getDay()===0?6:n.getDay()-1;
+  const t=new Date(n);t.setDate(t.getDate()-dow);
+  return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+}
+// Začátek měsíce jako string
+function monthStartStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-01';
+}
 
 function processData(sales,days){
   const now=new Date(),cut=new Date();cut.setDate(cut.getDate()-days);
-  const sow=new Date(now);sow.setDate(now.getDate()-now.getDay()+1);sow.setHours(0,0,0,0);
-  const lws=new Date(sow);lws.setDate(lws.getDate()-7);
-  const tod=new Date();tod.setHours(0,0,0,0);
   const f=sales.filter(s=>gd(s)>=cut);
-  const byHourC=Array(24).fill(0),hm=Array.from({length:7},()=>Array(24).fill(0));
-  const byWD=Array(7).fill(0),bySlot={},thisW=Array(7).fill(0),lastW=Array(7).fill(0),byMeth={};
-  let todR=0,todS=0;
+
+  // Graf – filtrované období, klíč = YYYY-MM-DD pro správné řazení
+  const byDayRaw={};const byWD=Array(7).fill(0);let maxT=0;
   f.forEach(s=>{
-    const d=gd(s),a=ga(s),h=d.getHours(),wd=d.getDay(),m=pm(s),slot=String(gs(s));
-    byHourC[h]++;hm[wd][h]++;byWD[wd]+=a;
-    byMeth[m]=(byMeth[m]||0)+a;
-    if(!bySlot[slot])bySlot[slot]={count:0,revenue:0};bySlot[slot].count++;bySlot[slot].revenue+=a;
-    if(d>=sow)thisW[wd]+=a;
-    else if(d>=lws&&d<sow)lastW[wd]+=a;
-    if(d>=tod){todR+=a;todS++;}
+    const dLoc=gd(s),a=ga(s),wd=dLoc.getDay();
+    const isoKey=dateStr(s); // YYYY-MM-DD
+    byDayRaw[isoKey]=(byDayRaw[isoKey]||0)+a;
+    byWD[wd]+=a;
+    if(a>maxT)maxT=a;
   });
-  const prods=Object.entries(bySlot).map(([slot,d])=>({name:sn(slot),slot,...d})).sort((a,b)=>b.revenue-a.revenue);
-  const prodsByCount=[...prods].sort((a,b)=>b.count-a.count);
-  const payM=Object.entries(byMeth).map(([n,r])=>({n,r})).sort((a,b)=>b.r-a.r);
-  const totPay=payM.reduce((s,p)=>s+p.r,0)||1;
-  const hmMax=Math.max(...hm.flat())||1;
-  const hmN=hm.map(row=>row.map(v=>v===0?0:Math.min(5,Math.ceil(v/hmMax*5))));
-  return{byHourC,hm:hmN,byWD,thisW,lastW,prods,prodsByCount,payM,totPay,todR,todS};
+  // Seřaď dny a převeď na DD.MM pro zobrazení
+  const byDay={};
+  Object.keys(byDayRaw).sort().forEach(k=>{
+    const parts=k.split('-');
+    const label=parts[2]+'.'+parts[1];
+    byDay[label]=byDayRaw[k];
+  });
+
+  // Dnes/týden/měsíc – string porovnání, vždy ze VŠECH dat
+  const tStr=todayStr(),wStr=weekStartStr(),mStr=monthStartStr();
+  let todR=0,todS=0,wkR=0,monthR=0,cashR=0,cardR=0;
+  sales.forEach(s=>{
+    const ds=dateStr(s),a=ga(s),m=pm(s);
+    if(ds===tStr){todR+=a;todS++;}
+    if(ds>=wStr)wkR+=a;
+    if(ds>=mStr)monthR+=a;
+    if(m==='Hotovost')cashR+=a;else cardR+=a;
+  });
+
+  const totalR=sales.reduce((s,t)=>s+ga(t),0);
+  const totalS=sales.length;
+  const tr=f.reduce((s,t)=>s+ga(t),0),ts=f.length,av=ts?tr/ts:0;
+  const bi=byWD.indexOf(Math.max(...byWD));
+  const lastTx=[...sales].sort((a,b)=>gd(b)-gd(a)).slice(0,12).map(s=>{const m=pm(s);return{time:gd(s).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}),product:sn(gs(s)),method:m,amount:ga(s),dot:dc(m)};});
+  return{byDay,tr,ts,av,bi,bdr:byWD[bi],todR,todS,wkR,monthR,maxT,cashR,cardR,totalR,totalS,lastTx};
+}
+
+function generateMockData(){
+  const products=[{slot:'8',name:'Booster Pack SV',price:170},{slot:'10',name:'Tin Box',price:300},{slot:'13',name:'Pikachu Promo',price:60},{slot:'18',name:'Charizard ETB',price:400},{slot:'24',name:'Booster Pack XY',price:150},{slot:'3',name:'Blister Pack',price:120},{slot:'5',name:'Mini Tin',price:85}];
+  const methods=['Karta','Karta','Karta','Visa','Mastercard','Hotovost','Apple Pay','Google Pay'];
+  const sales=[];const now=new Date();
+  for(let day=89;day>=0;day--){
+    const d=new Date(now);d.setDate(d.getDate()-day);
+    const isWE=d.getDay()===0||d.getDay()===6;
+    const count=isWE?Math.floor(Math.random()*8)+12:Math.floor(Math.random()*6)+7;
+    for(let i=0;i<count;i++){
+      const hour=Math.random()<0.7?Math.floor(Math.random()*9)+10:Math.floor(Math.random()*24);
+      const dt=new Date(d);dt.setHours(hour,Math.floor(Math.random()*60),0,0);
+      const weights=[3,2,4,1,3,2,2];const rand=Math.random()*17;let wi=0,ws=0;
+      for(let j=0;j<weights.length;j++){ws+=weights[j];if(rand<ws){wi=j;break;}}
+      const prod=products[wi];
+      sales.push({AuthorizationDateTimeGMT:dt.toISOString(),SettlementValue:prod.price,Selection:prod.slot,PaymentMethod:methods[Math.floor(Math.random()*methods.length)]});
+    }
+  }
+  return sales;
 }
 
 Chart.defaults.color='#5a5a6a';Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.font.size=10.5;
 const TT={backgroundColor:'#18181d',borderColor:'rgba(255,255,255,0.07)',borderWidth:1,titleColor:'#e8e8ec',bodyColor:'#8888a0',padding:10};
-function dd(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 
-function makeLegend(el,labels,colors,values,total){
-  document.getElementById(el).innerHTML=labels.map((l,i)=>`
-    <div style="display:flex;align-items:center;gap:7px">
-      <div style="width:9px;height:9px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div>
-      <span style="font-size:.76rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l}</span>
-      <span style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted2)">${Math.round(values[i]/total*100)}%</span>
-    </div>`).join('');
-}
-
-function renderCharts(sales){
-  if(!sales){return;}
+function renderAll(sales){
   const d=processData(sales,AD);
+  // Stats
+  // Celkové stats (ze všech dat)
+  document.getElementById('v-rev').textContent=fmt(d.totalR);
+  document.getElementById('b1').textContent=`${d.totalS} prod. celkem`;
+  document.getElementById('v-sales').textContent=d.totalS.toLocaleString('cs-CZ');
+  document.getElementById('b2').textContent=`od začátku`;
+  // Profit
+  const tStr2=todayStr();
+  const totalProfit=sales.reduce((s,t)=>s+(PRODUCTS_MARGIN[String(gs(t))]||0),0);
+  const todayProfit=sales.filter(t=>(t.AuthorizationDateTimeGMT||'').slice(0,10)===tStr2).reduce((s,t)=>s+(PRODUCTS_MARGIN[String(gs(t))]||0),0);
+  document.getElementById('v-total-profit').textContent=fmt(totalProfit);
+  document.getElementById('v-today-profit').textContent=fmt(todayProfit);
+  document.getElementById('s-today-profit').textContent=`${sales.filter(t=>(t.AuthorizationDateTimeGMT||'').slice(0,10)===tStr2).length} prodejů dnes`;
+  // Časové stats
+  document.getElementById('v-month').textContent=fmt(d.monthR);
+  document.getElementById('s-month').textContent=new Date().toLocaleDateString('cs-CZ',{month:'long',year:'numeric'});
+  document.getElementById('v-week').textContent=fmt(d.wkR);
+  document.getElementById('v-today').textContent=fmt(d.todR);
+  document.getElementById('s-today').innerHTML=`<strong>${d.todS} prodejů</strong> dnes`;
 
-  // Donut 1 – tržby
-  dd('d1');const top1=d.prods.slice(0,8),tot1=top1.reduce((s,p)=>s+p.revenue,0)||1;
-  CH.d1=new Chart(document.getElementById('cDonut1'),{type:'doughnut',data:{labels:top1.map(p=>p.name),datasets:[{data:top1.map(p=>p.revenue),backgroundColor:COLORS.slice(0,top1.length),borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed).toLocaleString('cs-CZ')} Kč (${Math.round(c.parsed/tot1*100)}%)`}}}}});
-  makeLegend('leg1',top1.map(p=>p.name),COLORS,top1.map(p=>p.revenue),tot1);
-
-  // Donut 2 – kusy
-  dd('d2');const top2=d.prodsByCount.slice(0,8),tot2=top2.reduce((s,p)=>s+p.count,0)||1;
-  CH.d2=new Chart(document.getElementById('cDonut2'),{type:'doughnut',data:{labels:top2.map(p=>p.name),datasets:[{data:top2.map(p=>p.count),backgroundColor:COLORS.slice(0,top2.length),borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${c.parsed} kusů (${Math.round(c.parsed/tot2*100)}%)`}}}}});
-  makeLegend('leg2',top2.map(p=>p.name),COLORS,top2.map(p=>p.count),tot2);
-
-  // Donut 3 – platební metody
-  dd('d3');const top3=d.payM.slice(0,6),tot3=d.totPay;
-  CH.d3=new Chart(document.getElementById('cDonut3'),{type:'doughnut',data:{labels:top3.map(p=>p.n),datasets:[{data:top3.map(p=>p.r),backgroundColor:COLORS.slice(0,top3.length),borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed).toLocaleString('cs-CZ')} Kč (${Math.round(c.parsed/tot3*100)}%)`}}}}});
-  makeLegend('leg3',top3.map(p=>p.n),COLORS,top3.map(p=>p.r),tot3);
-
-  // Dle dne v týdnu
-  dd('wk');const mx=Math.max(...d.byWD)||1;
-  CH.wk=new Chart(document.getElementById('cWeek'),{type:'bar',data:{labels:DC,datasets:[{data:d.byWD,backgroundColor:d.byWD.map(v=>v===mx?'#4f8ef7':'rgba(79,142,247,.2)'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
-
-  // Dle hodiny
-  dd('hr');
-  CH.hr=new Chart(document.getElementById('cHour'),{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i+':00'),datasets:[{data:d.byHourC,backgroundColor:'rgba(167,139,250,.4)',hoverBackgroundColor:'rgba(167,139,250,.8)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${c.parsed.y} prodejů`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:12}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{precision:0}}}}});
-
-  // Srovnání týdnů
-  dd('cmp');
-  CH.cmp=new Chart(document.getElementById('cCompare'),{type:'bar',data:{labels:DC,datasets:[{label:'Tento týden',data:d.thisW,backgroundColor:'rgba(79,142,247,.7)',borderRadius:4,borderSkipped:false},{label:'Minulý týden',data:d.lastW,backgroundColor:'rgba(255,255,255,.08)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#8888a0',boxWidth:10,padding:12,font:{size:11}}},tooltip:{...TT,callbacks:{label:c=>`  ${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
-
-  // Denní cíl
-  // Denni profit = pocet dnesních prodejů * prumerná marže
-  const PRODUCTS_MARGIN={'1':50,'2':52,'3':100,'4':43,'5':45,'6':33,'7':42,'8':31,'9':41,'10':41,'11':50,'12':42,'13':38,'14':59,'15':42,'16':83,'17':125,'18':67,'19':42,'20':75,'21':45,'22':75,'23':42,'24':33,'25':67,'26':83};
-  const todayProfit=_grafySales?_grafySales.filter(s=>(s.AuthorizationDateTimeGMT||'').slice(0,10)===new Date().toLocaleDateString('sv-SE')).reduce((sum,s)=>sum+(PRODUCTS_MARGIN[String(s.Selection)]||0),0):0;
-  const pct=Math.min(100,Math.round(todayProfit/GOAL*100));
-  document.getElementById('gRing').style.strokeDashoffset=276.5-(276.5*pct/100);
-  document.getElementById('gPct').textContent=pct+'%';
-  document.getElementById('gToday').textContent=fmt(todayProfit)+' profit';
-  document.getElementById('gLeft').textContent=todayProfit>=GOAL?'✅ Splněno!':fmt(Math.max(0,GOAL-todayProfit));
-  document.getElementById('gSales').textContent=d.todS;
-
-  // Heatmapa
-  const hrs=Array.from({length:24},(_,i)=>String(i).padStart(2,'0'));
-  let html='<div class="hm-grid"><div></div>';
-  hrs.forEach(h=>html+=`<div class="hm-h">${h}</div>`);
-  DC.forEach((day,di)=>{
-    html+=`<div class="hm-d">${day}</div>`;
-    d.hm[di].forEach((v,hi)=>html+=`<div class="hm-c h${v}" title="${DF[di]} ${hi}:00 – ${d.hm[di][hi]}× prodáno"></div>`);
-  });
-  html+='</div>';
-  document.getElementById('heatmap').innerHTML=html;
-
-  // Top produkty dle tržeb
-  const mc=d.prods[0]?.count||1;
-  document.getElementById('prodRevList').innerHTML=d.prods.slice(0,7).map((p,i)=>`
-    <div class="pr"><div class="prk">${i+1}</div><div class="pi"><div class="pn">${p.name}</div><div class="ps">Slot ${p.slot}</div></div><div class="pbw"><div class="pb" style="width:${Math.round(p.revenue/d.prods[0].revenue*100)}%"></div></div><div class="pc">${p.count}×</div><div class="pv">${fmt(p.revenue)}</div></div>`).join('');
-
-  // Top produkty dle kusů
-  document.getElementById('prodCntList').innerHTML=d.prodsByCount.slice(0,7).map((p,i)=>`
-    <div class="pr"><div class="prk">${i+1}</div><div class="pi"><div class="pn">${p.name}</div><div class="ps">Slot ${p.slot}</div></div><div class="pbw"><div class="pb" style="width:${Math.round(p.count/d.prodsByCount[0].count*100)}%;background:var(--accent2)"></div></div><div class="pc">${p.count}×</div><div class="pv">${fmt(p.revenue)}</div></div>`).join('');
-
-  // Platební metody detail
-  const icons={'Visa':'💳','Mastercard':'💳','Hotovost':'💵','Apple Pay':'🍎','Google Pay':'🔵','Karta':'💳'};
-  const pColors={'Visa':'#4f8ef7','Mastercard':'#f59e0b','Hotovost':'#22c55e','Apple Pay':'#e8e8ec','Google Pay':'#4285f4','Karta':'#a78bfa'};
-  document.getElementById('payList').innerHTML=d.payM.map(p=>{const pct=Math.round(p.r/d.totPay*100);return`<div class="pay-row"><div class="pay-ico">${icons[p.n]||'💳'}</div><div class="pay-name">${p.n}</div><div class="pay-bw"><div class="pay-b" style="width:${pct}%;background:${pColors[p.n]||'#4f8ef7'}"></div></div><div class="pay-pct">${pct}%</div></div>`;}).join('');
-
-  document.getElementById('apiDot').classList.remove('red');
-  document.getElementById('apiStatus').textContent='Data načtena';
+  // Cash vs karta ze VŠECH dat
+  const allRev=d.totalR||1;
+  const cp=Math.round(d.cashR/allRev*100);
+  document.getElementById('v-split').textContent=`${cp}% / ${100-cp}%`;
+  document.getElementById('s-split').innerHTML=`hotovost <strong>${fmt(d.cashR)}</strong> · karta <strong>${fmt(d.cardR)}</strong>`;
+  // Revenue chart
+  if(cRev)cRev.destroy();
+  const ctx=document.getElementById('cRev');
+  const g=ctx.getContext('2d').createLinearGradient(0,0,0,220);
+  g.addColorStop(0,'rgba(79,142,247,.18)');g.addColorStop(1,'rgba(79,142,247,0)');
+  cRev=new Chart(ctx,{type:'line',data:{labels:Object.keys(d.byDay),datasets:[{data:Object.values(d.byDay),borderColor:'#4f8ef7',backgroundColor:g,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`  ${Math.round(c.parsed.y).toLocaleString('cs-CZ')} Kč`}}},scales:{x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{callback:v=>fmts(v)+' Kč'}}}}});
+  // Transactions
+  document.getElementById('txList').innerHTML=d.lastTx.length
+    ?d.lastTx.map(t=>`<div class="tx-row"><div class="tx-dot ${t.dot}"></div><div class="tt">${t.time}</div><div class="tp">${t.product}</div><div class="tm">${t.method}</div><div class="ta">${fmt(t.amount)}</div></div>`).join('')
+    :'<div class="empty">Žádné transakce</div>';
+  // Save to sessionStorage for grafy.html
+  sessionStorage.setItem('salesData',JSON.stringify(sales));
 }
 
-let _grafySales=null;
-
-function setPeriod(btn,days){
-  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');AD=days;
-  renderCharts(_grafySales);
-}
-
-async function loadGrafyData(){
+async function loadData(){
   document.getElementById('loading').style.display='flex';
   try{
     const res=await fetch('/api/sales');
-    if(!res.ok)throw new Error(res.status);
+    if(!res.ok)throw new Error(`${res.status}`);
     const raw=await res.json();
-    _grafySales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.data||[]);
-    renderCharts(_grafySales);
+    const sales=Array.isArray(raw)?raw:(raw.Sales||raw.sales||raw.Data||raw.data||[]);
+    renderAll(sales);
+    document.getElementById('demoBadge').style.display='none';
     document.getElementById('apiDot').classList.remove('red');
-    document.getElementById('apiStatus').textContent='Data načtena';
+    document.getElementById('apiStatus').textContent='Nayax · online';
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});
   }catch(e){
-    console.error(e);
+    const mock=generateMockData();
+    renderAll(mock);
+    document.getElementById('demoBadge').style.display='inline-flex';
     document.getElementById('apiDot').classList.add('red');
-    document.getElementById('apiStatus').textContent='Chyba';
-  }finally{
-    document.getElementById('loading').style.display='none';
-  }
+    document.getElementById('apiStatus').textContent='Demo data';
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})+' · demo';
+  }finally{document.getElementById('loading').style.display='none';}
 }
 
-loadGrafyData();
+function setPeriod(btn,days){document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');AD=days;loadData();}
+setInterval(loadData,5*60*1000);
+loadData();
 </script>
 <script>
 if('serviceWorker' in navigator) {
@@ -464,8 +395,8 @@ if('serviceWorker' in navigator) {
 }
 </script>
 <nav class="mobile-nav">
-  <a href="dashboard.html" ><span>📊</span><span>Dashboard</span></a>
-  <a href="grafy.html" class="active"><span>📈</span><span>Grafy</span></a>
+  <a href="dashboard.html" class="active"><span>📊</span><span>Dashboard</span></a>
+  <a href="grafy.html" ><span>📈</span><span>Grafy</span></a>
   <a href="prodeje.html" ><span>🧾</span><span>Prodeje</span></a>
   <a href="produkty.html"><span>📦</span><span>Produkty</span></a>
   <a href="stav.html" ><span>🖥️</span><span>Stav</span></a>
