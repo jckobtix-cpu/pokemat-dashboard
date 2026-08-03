@@ -117,6 +117,36 @@ async function fetchFromSQS() {
           try { msg = JSON.parse(body); }
           catch(e) { console.error('JSON parse error:', e.message, body.slice(0, 100)); continue; }
 
+          // Filtruj podle stroje
+          if (msg.MachineId && msg.MachineId !== 235556676) {
+            // Lednice - pošli do jiného Discord kanálu
+            const FRIDGE_DISCORD = process.env.DISCORD_WEBHOOK_FRIDGE;
+            if (FRIDGE_DISCORD) {
+              const data = msg.Data || {};
+              const amount = parseFloat(data['SeValue'] || msg.AuthorizationValue || 0);
+              const time = (msg.MachineTime || '').slice(0,16).replace('T',' ');
+              const pmDesc = (data['Payment Method Description'] || '').toLowerCase();
+              const pm = pmDesc.includes('cash') ? '💵 Hotovost' : '💳 Karta';
+              await fetch(FRIDGE_DISCORD, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  embeds: [{
+                    title: '🧊 Nový prodej – Lednice',
+                    color: 0x4f8ef7,
+                    fields: [
+                      { name: '💰 Částka', value: `${Math.round(amount)} Kč`, inline: true },
+                      { name: '💳 Platba', value: pm, inline: true },
+                      { name: '🕐 Čas', value: time, inline: true },
+                    ],
+                    footer: { text: 'Nayax · Lednice' }
+                  }]
+                })
+              }).catch(() => {});
+            }
+            continue;
+          }
+
           const data = msg.Data || msg;
           
           // Platební metoda - pouzij Brand a Card String
