@@ -131,6 +131,7 @@ async function fetchFromSQS() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                  content: '@everyone',
                   embeds: [{
                     title: '🧊 Nový prodej – Lednice',
                     color: 0x4f8ef7,
