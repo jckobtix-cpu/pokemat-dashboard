@@ -41,6 +41,33 @@ async function redisSet(key, value) {
   }
 }
 
+// === BITEO: přeposlání prodeje z lednice do Biteo Supabase ===
+const BITEO_INGEST = 'https://gxcfnlgdqowhfyebgbmk.supabase.co/functions/v1/ingest-sale';
+const BITEO_SECRET = 'jK-WkTlKbIigcSrGd4H0xOLgMKcgnMgk';
+const BITEO_FRIDGE_ID = 883532609; // jen tahle lednice jde do Bitea
+async function biteoForward(msg) {
+  try {
+    const data = msg.Data || {};
+    const amount = parseFloat(data['SeValue'] || msg.AuthorizationValue || 0);
+    if (!(amount > 0)) return;
+    const pmDesc = (data['Payment Method Description'] || '').toLowerCase();
+    const payment = pmDesc.includes('cash') ? 'cash' : 'card';
+    const soldAt = (msg.MachineTime || new Date().toISOString()).replace('Z', '').slice(0, 19);
+    await fetch(BITEO_INGEST, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': BITEO_SECRET },
+      body: JSON.stringify({
+        machine_id: String(msg.MachineId),
+        price: amount,
+        payment: payment,
+        currency: 'CZK',
+        sold_at: soldAt,
+        raw: msg
+      })
+    });
+  } catch(e) { console.error('biteoForward error:', e.message); }
+}
+
 async function sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, queryString) {
   const crypto = await import('crypto');
   const url = new URL(QUEUE_URL);
@@ -144,6 +171,10 @@ async function fetchFromSQS() {
                   }]
                 })
               }).catch(() => {});
+            }
+            // >>> BITEO: přeposlat prodej lednice do Biteo dashboardu (jen 883532609)
+            if (msg.MachineId === BITEO_FRIDGE_ID) {
+              await biteoForward(msg);
             }
             continue;
           }
