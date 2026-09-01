@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/api/sales", "destination": "/api/sales.js" },
+    { "source": "/api/cleanup", "destination": "/api/cleanup.js" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/", "destination": "/index.html" }
   ],
