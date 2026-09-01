@@ -47,13 +47,14 @@ const BITEO_SECRET = 'jK-WkTlKbIigcSrGd4H0xOLgMKcgnMgk';
 const BITEO_FRIDGE_ID = 883532609; // jen tahle lednice jde do Bitea
 async function biteoForward(msg) {
   try {
+    console.log('biteoForward: start machine', msg.MachineId);
     const data = msg.Data || {};
     const amount = parseFloat(data['SeValue'] || msg.AuthorizationValue || 0);
     if (!(amount > 0)) return;
     const pmDesc = (data['Payment Method Description'] || '').toLowerCase();
     const payment = pmDesc.includes('cash') ? 'cash' : 'card';
     const soldAt = (msg.MachineTime || new Date().toISOString()).replace('Z', '').slice(0, 19);
-    await fetch(BITEO_INGEST, {
+    const resp = await fetch(BITEO_INGEST, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': BITEO_SECRET },
       body: JSON.stringify({
@@ -65,6 +66,7 @@ async function biteoForward(msg) {
         raw: msg
       })
     });
+    console.log('biteoForward: ingest status', resp.status, 'amount', amount);
   } catch(e) { console.error('biteoForward error:', e.message); }
 }
 
@@ -173,8 +175,10 @@ async function fetchFromSQS() {
               }).catch(() => {});
             }
             // >>> BITEO: přeposlat prodej lednice do Biteo dashboardu (jen 883532609)
-            if (msg.MachineId === BITEO_FRIDGE_ID) {
-              await biteoForward(msg);
+            // porovnání jako text, ať sedí i když Nayax pošle číslo jako string
+            if (String(msg.MachineId) === String(BITEO_FRIDGE_ID)) {
+              try { await biteoForward(msg); }
+              catch (e) { console.error('biteoForward failed:', e && e.message); }
             }
             continue;
           }
