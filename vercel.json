@@ -3,5 +3,8 @@
     { "source": "/api/sales", "destination": "/api/sales.js" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/sales?cron=1", "schedule": "* * * * *" }
   ]
 }
