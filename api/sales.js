@@ -107,7 +107,7 @@ async function fetchFromSQS() {
 
   try {
     const response = await sqsRequest(ACCESS_KEY, SECRET_KEY, QUEUE_URL, 'Action=ReceiveMessage&MaxNumberOfMessages=10&WaitTimeSeconds=0');
-    if (!response.ok) return [];
+  if (!response.ok) { console.error('SQS error:', response.status, (await response.text()).slice(0, 500)); return []; }
     const rawXml = await response.text();
     // Odstran vsechny HTML entity pred parsovanim XML
     const xml = rawXml
